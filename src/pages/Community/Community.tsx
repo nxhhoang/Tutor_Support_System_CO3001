@@ -1,27 +1,23 @@
 import React from 'react'
-
-type Topic = { id: string; title: string; author: string; comments: number; createdAt: string }
+import { useNavigate } from 'react-router-dom'
+import { getTopics, addTopic } from 'src/apis/topic.api'
+import type { Topic } from 'src/types/topic.type'
+import path from 'src/constants/path'
 
 export default function Community() {
-  const [topics, setTopics] = React.useState<Topic[]>([
-    { id: 't1', title: 'Hỏi về đề thực hành hệ điều hành', author: 'An', comments: 3, createdAt: '2025-10-20' },
-    { id: 't2', title: 'Tài liệu C++ nâng cao', author: 'Bình', comments: 5, createdAt: '2025-10-21' }
-  ])
+  const [topics, setTopics] = React.useState<Topic[]>([])
   const [q, setQ] = React.useState('')
   const [title, setTitle] = React.useState('')
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    setTopics(getTopics())
+  }, [])
 
   function createTopic() {
     if (!title.trim()) return alert('Nhập tiêu đề')
-    setTopics([
-      {
-        id: Date.now().toString(),
-        title,
-        author: 'Bạn',
-        comments: 0,
-        createdAt: new Date().toISOString().slice(0, 10)
-      },
-      ...topics
-    ])
+    const newTopic = addTopic(title, 'Bạn')
+    setTopics([newTopic, ...topics])
     setTitle('')
   }
 
@@ -29,7 +25,7 @@ export default function Community() {
 
   return (
     <div className='p-6'>
-      <h2 className='text-xl font-semibold mb-4'>Cộng đồng</h2>
+      <h2 className='text-2xl font-semibold mb-4'>Cộng đồng</h2>
       <div className='bg-white p-4 rounded shadow'>
         <div className='mb-3'>
           <input
@@ -45,9 +41,7 @@ export default function Community() {
               className='flex-1 border p-2 rounded'
               placeholder='Tìm chủ đề...'
             />
-            <button className='px-3 py-2 border rounded' onClick={() => {}}>
-              Tìm
-            </button>
+            <button className='px-3 py-2 border rounded'>Tìm</button>
           </div>
           <button className='mt-3 px-4 py-2 bg-blue-600 text-white rounded' onClick={createTopic}>
             Đăng chủ đề
@@ -56,10 +50,14 @@ export default function Community() {
 
         <div className='space-y-3'>
           {filtered.map((t) => (
-            <div key={t.id} className='p-3 border rounded'>
+            <div
+              key={t.id}
+              className='p-3 border rounded cursor-pointer hover:bg-gray-50'
+              onClick={() => navigate(path.communityTopic.replace(':topicId', t.id))}
+            >
               <div className='font-medium'>{t.title}</div>
               <div className='text-xs text-gray-500'>
-                Bởi {t.author} • {t.createdAt} • {t.comments} bình luận
+                Bởi {t.author} • {t.createdAt} • {t.comments.length} bình luận
               </div>
             </div>
           ))}

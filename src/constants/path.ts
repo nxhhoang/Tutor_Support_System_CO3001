@@ -1,25 +1,25 @@
+// src/constants/path.ts
 const path = {
-  // --- AUTHENTICATION ---
+  // --- AUTH ---
   login: '/login',
   logout: '/logout',
-  register: '/register', // nếu sau này có đăng ký riêng tutor
+
+  // --- SSO ---
+  sso: '/sso/login',
+  homepage: '/',
 
   // --- DASHBOARD ---
   dashboard: '/dashboard',
 
   // --- USER ---
-  user: '/user',
-  userProfile: '/user/profile',
-  userSettings: '/user/settings',
-  userSchedule: '/user/schedule',
+  profile: '/profile', //
 
   // --- TUTOR ---
   tutors: '/tutors',
-  tutorDetail: '/tutors/:tutorId',
+  tutorDetail: '/tutors/profile/:tutorId',
   tutorBook: '/tutors/:tutorId/book',
 
   // --- SCHEDULE & SESSION ---
-  schedule: '/schedule',
   session: '/session',
   sessionDetail: '/session/:sessionId',
 
@@ -28,12 +28,30 @@ const path = {
   communityTopic: '/community/:topicId',
 
   // --- DOCUMENTS ---
-  documents: '/documents',
-  documentDetail: '/documents/:docId',
+  documents: '/documents', //
+  documentDetail: '/documents/:docId', //
 
-  // --- SYSTEM / OTHER ---
+  // --- SYSTEM ---
   about: '/about',
-  notFound: '*'
+  notFound: '*',
+
+  manageMentee: '/mentees/manage',
+  tutorMenteeManage: '/TutorMenteeManage',
+
+  statistics: '/statistics',
+
+
+
+
+
+  programRegister: '/program/register',
+  programManage: '/program/manage',
+  sessionManage: '/session/manage',
+  studentManage: '/students/manage',
+  learningPath: '/personalize-learning',
+  
+  tutorWorkload: '/tutor/workload',
+  resourceAllocate: '/resources/allocate',
 } as const
 
 export default path
