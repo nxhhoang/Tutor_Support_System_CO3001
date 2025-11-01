@@ -41,7 +41,7 @@ export default function SearchOtherProfiles() {
   return (
     <div className="mt-6 border-t pt-4">
       <h3 className="font-semibold text-blue-700 mb-2 text-center">
-        Tra cứu hồ sơ {user?.role === 'student' ? 'Tutor' : 'Sinh viên'} / Tutor
+        Tra cứu hồ sơ {user?.role === 'student' ? 'Tutor' : 'Sinh viên'}
       </h3>
 
       {/* 🔍 Ô tìm kiếm */}

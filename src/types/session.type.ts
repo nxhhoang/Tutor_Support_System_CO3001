@@ -20,14 +20,24 @@ export type SessionFeedback = {
   createdAt: string
 }
 
+export type TutorFeedback = {
+  id: number
+  tutorId: number
+  studentId: number
+  sessionId: number
+  rating: number
+  comment?: string
+  createdAt: string
+}
+
 export type Session = {
   id: number
   programId: number
   tutorId: number
   studentId: number
   mode: SessionMode
-  location?: string // phòng học hoặc link online
-  time: string // ISO hoặc dạng "2025-11-02 09:00"
+  location?: string 
+  time: string 
   status: SessionStatus
   createdAt: string
   confirmedAt?: string
@@ -37,6 +47,7 @@ export type Session = {
   tutorInfo?: TutorSummary
   studentInfo?: User
   feedbacks?: SessionFeedback[]
+  tutorFeedbacks?: TutorFeedback[]
   meetingReport?: string
 }
 

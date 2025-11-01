@@ -64,7 +64,7 @@ export let programs: Program[] = [
     availableSlots: 5,
     startDate: '2025-10-25',
     endDate: '2025-11-30',
-    tutors: [tutors[6]],
+    tutors: [tutors[6], tutors[1]],
     status: 'published',
     createdBy: 4
   },

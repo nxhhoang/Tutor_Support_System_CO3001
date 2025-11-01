@@ -1,4 +1,4 @@
-import type { Session, SessionFeedback } from '../types/session.type'
+import type { Session, SessionFeedback, TutorFeedback } from '../types/session.type'
 
 const sessions: Session[] = [
   {
@@ -48,12 +48,12 @@ const sessions: Session[] = [
           knowledgeLoad: 4,
           clarity: 5,
           enthusiasm: 5,
-          goalTransmission: 4,
+          goalTransmission: 4
         },
         comment: 'Khóa học rất hay, giảng viên nhiệt tình và dễ hiểu!',
-        createdAt: '2025-10-21',
-      },
-    ],
+        createdAt: '2025-10-21'
+      }
+    ]
   },
   {
     id: 4,
@@ -107,6 +107,17 @@ const sessions: Session[] = [
         comment: 'Buổi học ổn, có thể cải thiện phần trình bày ví dụ.',
         createdAt: '2025-10-16'
       }
+    ],
+    tutorFeedbacks: [
+      {
+        id: 1,
+        tutorId: 2,
+        studentId: 1,
+        sessionId: 6,
+        rating: 5,
+        comment: 'Sinh viên tiếp thu tốt, chăm chỉ và đúng giờ.',
+        createdAt: '2025-10-17'
+      }
     ]
   },
   {
@@ -153,7 +164,6 @@ const sessions: Session[] = [
   }
 ]
 
-
 export const sessionApi = {
   getAllSessions: () => sessions,
   getSessionsByStudent: (studentId: number) => sessions.filter((s) => s.studentId === studentId),
@@ -172,7 +182,10 @@ export const sessionApi = {
   },
 
   // addFeedback: thêm feedback và trả về feedback mới
-  addFeedback: (sessionId: number, feedbackPayload: Omit<SessionFeedback, 'id' | 'createdAt'>) : SessionFeedback | null => {
+  addFeedback: (
+    sessionId: number,
+    feedbackPayload: Omit<SessionFeedback, 'id' | 'createdAt'>
+  ): SessionFeedback | null => {
     const s = sessions.find((x) => x.id === sessionId)
     if (!s) return null
     const newFeedback: SessionFeedback = {
@@ -194,6 +207,26 @@ export const sessionApi = {
   setMeetingReport(sessionId: number, report: string) {
     const s = sessions.find((x) => x.id === sessionId)
     if (s) s.meetingReport = report
-  }
+  },
+  addTutorFeedback: (
+    sessionId: number,
+    feedbackPayload: Omit<TutorFeedback, 'id' | 'createdAt'>
+  ): TutorFeedback | null => {
+    const s = sessions.find((x) => x.id === sessionId)
+    if (!s) return null
+    const newFeedback: TutorFeedback = {
+      id: Date.now(),
+      sessionId,
+      createdAt: new Date().toISOString().slice(0, 10),
+      ...feedbackPayload
+    }
+    s.tutorFeedbacks = s.tutorFeedbacks || []
+    s.tutorFeedbacks.push(newFeedback)
+    return newFeedback
+  },
 
+  getTutorFeedbackBySession: (sessionId: number): TutorFeedback[] => {
+    const s = sessions.find((x) => x.id === sessionId)
+    return s?.tutorFeedbacks ? [...s.tutorFeedbacks] : []
+  }
 }

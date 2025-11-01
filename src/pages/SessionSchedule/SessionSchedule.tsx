@@ -137,7 +137,7 @@ export default function SessionSchedule() {
     <div className='p-6 space-y-8'>
       <div className='flex items-center justify-between mb-4'>
         <h2 className='text-2xl font-semibold'>
-          {user.role === 'tutor' ? 'Lịch dạy' : 'Lịch học'} ({user.role})
+          {user.role === 'tutor' ? 'Lịch dạy' : 'Lịch học'}
         </h2>
 
         {user.role === 'tutor' && (
@@ -164,7 +164,7 @@ export default function SessionSchedule() {
               mode: data.mode,
               location: data.mode === 'offline' ? data.location || 'Chưa rõ' : 'Online',
               time: data.time.replace('T', ' '),
-              status: 'confirmed',
+              status: 'confirmed' as const,
               createdAt: new Date().toISOString().slice(0, 10),
               confirmedAt: new Date().toISOString().slice(0, 10),
               subject: 'Môn học mới'

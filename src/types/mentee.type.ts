@@ -21,4 +21,5 @@ export type Mentee = {
   nextSession?: Session
   previousFeedbacks?: SessionFeedback[]
   notes?: MenteeNote[]
+  className: string
 }
