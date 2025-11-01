@@ -15,7 +15,7 @@ const ConfirmedSessions: React.FC<Props> = ({ sessions, user, onCancel }) => {
       <div className="space-y-2">
         {sessions.map((s) => (
           <div key={s.id} className="border rounded p-3">
-            <div className="font-medium">Program #{s.programId}</div>
+            <div className="font-medium">{s.subject}</div>
             <div className="text-sm text-gray-600">
               {s.mode === 'online' ? (
                 <>
@@ -31,14 +31,14 @@ const ConfirmedSessions: React.FC<Props> = ({ sessions, user, onCancel }) => {
             </div>
 
             {user.role === 'student' && (
-              <button className="mt-2 px-3 py-1 bg-green-600 text-white rounded">Join Session</button>
+              <button className="px-3 py-1 border w-28 bg-green-600 text-white rounded">Điểm danh</button>
             )}
 
             {user.role === 'tutor' && (
               <div className="flex gap-2 mt-2">
-                <button className="px-3 py-1 border rounded">Đổi lịch</button>
+                <button className="px-3 py-1 border rounded w-28 text-center">Đổi lịch</button>
                 <button
-                  className="px-3 py-1 border text-red-600 rounded"
+                  className="px-3 py-1 border w-28 text-red-600 rounded"
                   onClick={() => onCancel(s.id)}
                 >
                   Hủy

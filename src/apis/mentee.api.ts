@@ -50,6 +50,7 @@ export const menteeApi = {
         }
       ]
     },
+
     {
       id: 2,
       name: 'Trần Thị C',
@@ -59,6 +60,90 @@ export const menteeApi = {
       avatar: 'https://ui-avatars.com/api/?name=Tran+Thi+C',
       progress: 'Hoàn thành khóa Python cơ bản',
       nextSession: null,
+      previousFeedbacks: [],
+      notes: []
+    },
+
+    {
+      id: 3,
+      name: 'Lê Minh D',
+      email: 'd.le@example.com',
+      major: 'Khoa học Dữ liệu',
+      year: 4,
+      avatar: 'https://ui-avatars.com/api/?name=Le+Minh+D',
+      phone: '0912345678',
+      progress: 'Chuẩn bị cho dự án tốt nghiệp',
+      nextSession: {
+        id: 102,
+        programId: 2,
+        tutorId: 10,
+        studentId: 3,
+        mode: 'offline',
+        location: 'Phòng 304, Tòa C',
+        time: '2025-11-05T09:00:00',
+        status: 'pending',
+        createdAt: '2025-10-28T10:00:00'
+      },
+      previousFeedbacks: [
+        {
+          id: 2,
+          studentId: 3,
+          sessionId: 95,
+          ratingCriteria: {
+            practicalRelevance: 4,
+            knowledgeLoad: 5,
+            clarity: 4,
+            enthusiasm: 4,
+            goalTransmission: 5
+          },
+          comment: 'Học viên có khả năng phân tích dữ liệu tốt nhưng cần cải thiện phần trình bày.',
+          createdAt: '2025-10-10T18:30:00'
+        }
+      ],
+      notes: [
+        {
+          id: 2,
+          tutorId: 10,
+          menteeId: 3,
+          content: 'Nên tập trung vào visualization bằng Matplotlib.',
+          createdAt: '2025-10-26T09:45:00'
+        }
+      ]
+    },
+
+    {
+      id: 4,
+      name: 'Phạm Quỳnh E',
+      email: 'e.pham@example.com',
+      major: 'Kỹ thuật phần mềm',
+      year: 1,
+      avatar: 'https://ui-avatars.com/api/?name=Pham+Quynh+E',
+      progress: 'Mới tham gia chương trình mentoring',
+      nextSession: null,
+      previousFeedbacks: [],
+      notes: []
+    },
+
+    {
+      id: 5,
+      name: 'Hoàng Đức F',
+      email: 'f.hoang@example.com',
+      major: 'An toàn Thông tin',
+      year: 3,
+      avatar: 'https://ui-avatars.com/api/?name=Hoang+Duc+F',
+      phone: '0987123456',
+      progress: 'Đang học về bảo mật mạng nâng cao',
+      nextSession: {
+        id: 103,
+        programId: 3,
+        tutorId: 10,
+        studentId: 5,
+        mode: 'online',
+        location: 'Google Meet: https://meet.google.com/abc-defg-hij',
+        time: '2025-11-07T20:00:00',
+        status: 'confirmed',
+        createdAt: '2025-10-27T11:00:00'
+      },
       previousFeedbacks: [],
       notes: []
     }

@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { MockProgramAPI } from 'src/apis/program.api'
+import { AppContext } from 'src/contexts/app.context'
 import type { Program, TutorSummary } from 'src/types/program.type'
-
 
 export default function ProgramDetailModal({
   program,
@@ -18,6 +18,9 @@ export default function ProgramDetailModal({
   onAIMatch: (registrationId: number) => void
   currentStudentId?: number
 }) {
+  const { user } = useContext(AppContext)
+  const isStudent = user?.role === 'student'
+
   const [registrationId, setRegistrationId] = React.useState<number | null>(null)
   const [tutors, setTutors] = React.useState<TutorSummary[] | undefined>(program.tutors)
   const [searchTutorQ, setSearchTutorQ] = React.useState('')
@@ -33,6 +36,15 @@ export default function ProgramDetailModal({
   function fetchTutors(q?: string) {
     const list = MockProgramAPI.getTutors(program.id, q)
     setTutors(list)
+  }
+
+  // ✅ Hàm đăng ký tại chỗ nếu chưa đăng ký
+  function ensureRegistration(): number | null {
+    if (registrationId) return registrationId
+    if (!currentStudentId) return null
+    const reg = MockProgramAPI.registerProgram(program.id, currentStudentId)
+    setRegistrationId(reg.id)
+    return reg.id
   }
 
   return (
@@ -59,20 +71,28 @@ export default function ProgramDetailModal({
                 Số chỗ còn lại: <strong>{program.availableSlots}</strong>
               </div>
             </div>
-            <div className='flex gap-2'>
-              <button
-                onClick={() => {
-                  if (!registrationId) {
-                    alert('Bạn chưa đăng ký chương trình — đăng ký trước khi yêu cầu ghép Tutor.')
-                    return
-                  }
-                  onAIMatch(registrationId)
-                }}
-                className='px-3 py-2 border rounded'
-              >
-                Ghép cặp bằng AI
-              </button>
-            </div>
+
+            {/* ✅ Chỉ hiện nếu user là student */}
+            {isStudent && (
+              <div className='flex gap-2'>
+                <button
+                  onClick={() => {
+                    let id = registrationId
+                    if (!id) id = ensureRegistration()
+                    if (id) {
+                      onAIMatch(id)
+                      const list = MockProgramAPI.aiMatchTutors(id)
+                      setTutors(list)
+                      onSelectTutor(id, list[0].id)
+                      alert(`Đã ghép cặp AI thành công với ${list[0].name}!`)
+                    }
+                  }}
+                  className='px-3 py-2 border rounded'
+                >
+                  Ghép cặp bằng AI
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Danh sách tutor */}
@@ -107,18 +127,22 @@ export default function ProgramDetailModal({
                       >
                         Xem hồ sơ
                       </button>
-                      <button
-                        className='px-2 py-1 border border-blue-600 text-blue-600 rounded text-sm hover:bg-blue-50'
-                        onClick={() => {
-                          if (!registrationId) {
-                            alert('Bạn cần đăng ký chương trình trước khi chọn Tutor.')
-                            return
-                          }
-                          onSelectTutor(registrationId, t.id)
-                        }}
-                      >
-                        Đăng ký
-                      </button>
+
+                      {/* ✅ Nút "Đăng ký" chỉ hiện nếu là student */}
+                      {isStudent && (
+                        <button
+                          className='px-2 py-1 border border-blue-600 text-blue-600 rounded text-sm hover:bg-blue-50'
+                          onClick={() => {
+                            const id = ensureRegistration()
+                            if (id) {
+                              onSelectTutor(id, t.id)
+                              alert('Đăng ký tutor thành công!')
+                            }
+                          }}
+                        >
+                          Đăng ký
+                        </button>
+                      )}
                     </div>
                   </li>
                 ))}

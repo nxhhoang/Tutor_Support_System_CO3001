@@ -11,7 +11,9 @@ export const tutors: TutorSummary[] = [
   { id: 5, name: 'TS. Bùi B', major: 'Mạng máy tính', rating: 4.5, avail: ['28/10 16:00', '30/10 11:00'] },
   { id: 6, name: 'ThS. Đỗ C', major: 'Phân tích thiết kế hệ thống', rating: 4.3, avail: ['01/11 10:00', '03/11 09:00'] },
   { id: 7, name: 'PGS. Nguyễn D', major: 'An toàn thông tin', rating: 4.9, avail: ['31/10 13:00', '01/11 14:30'] },
-  { id: 8, name: 'TS. Lý E', major: 'Học máy nâng cao', rating: 4.8, avail: ['02/11 09:00', '03/11 15:00'] }
+  { id: 8, name: 'TS. Lý E', major: 'Học máy nâng cao', rating: 4.8, avail: ['02/11 09:00', '03/11 15:00'] },
+  { id: 9, name: 'TS. Đỗ Nam Châm', major: 'Kỹ năng mềm', rating: 5.0, avail: ['02/11 08:00', '03/11 14:00'] },
+  { id: 10, name: 'ThS. Devon Larrat', major: 'Kỹ năng sinh tồn', rating: 4.5, avail: ['01/11 09:00', '01/11 14:00'] }
 ]
 
 /* ---------------------------
@@ -55,7 +57,7 @@ export let programs: Program[] = [
     title: 'An toàn thông tin cơ bản',
     code: 'SEC_BASE_103',
     description: 'Giới thiệu các khái niệm an toàn thông tin, thực hành pentest cơ bản.',
-    category: 'Non-Academic',
+    category: 'Academic',
     field: 'Security',
     capacity: 40,
     enrolledCount: 35,
@@ -71,7 +73,7 @@ export let programs: Program[] = [
     title: 'Workshop Mạng máy tính',
     code: 'NET_WORK_104',
     description: 'Tổng quan Mạng máy tính, cấu hình, thực hành lab.',
-    category: 'Non-Academic',
+    category: 'Academic',
     field: 'Networking',
     capacity: 20,
     enrolledCount: 10,
@@ -95,6 +97,38 @@ export let programs: Program[] = [
     startDate: '2025-11-10',
     endDate: '2025-12-20',
     tutors: [tutors[2], tutors[7]],
+    status: 'published',
+    createdBy: 6
+  },
+  {
+    id: 106,
+    title: 'Kỹ năng thuyết trình trước đám đông',
+    code: 'SKILL_FOR_STU_106',
+    description: 'Bài học hỗ trợ sinh viên vượt qua nỗi sợ thuyết trình trước đám đông, tạo sự tự tin cho sinh viên',
+    category: 'Non-Academic',
+    field: 'SoftSkill',
+    capacity: 50,
+    enrolledCount: 40,
+    availableSlots: 10,
+    startDate: '2025-11-10',
+    endDate: '2025-12-20',
+    tutors: [tutors[8], tutors[9]],
+    status: 'published',
+    createdBy: 6
+  },
+  {
+    id: 107,
+    title: 'Cách sinh tồn nơi hoang dã rừng núi',
+    code: 'SKILL_FOR_STU_107',
+    description: 'Khám phá hành trình phiêu lưu giữa rừng rậm hoang vu, vắng vẻ và hoang dại',
+    category: 'Non-Academic',
+    field: 'SoftSkill',
+    capacity: 50,
+    enrolledCount: 40,
+    availableSlots: 10,
+    startDate: '2025-12-10',
+    endDate: '2025-13-20',
+    tutors: [],
     status: 'published',
     createdBy: 6
   }

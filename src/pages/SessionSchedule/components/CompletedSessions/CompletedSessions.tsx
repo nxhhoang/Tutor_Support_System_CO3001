@@ -1,15 +1,6 @@
 import React from 'react'
-import type { Session, SessionFeedback } from 'src/types/session.type'
+import type { Session, SessionFeedback, Avg } from 'src/types/session.type'
 import type { BaseUser } from 'src/types/user.type'
-
-type Avg = {
-  practicalRelevance: number
-  knowledgeLoad: number
-  clarity: number
-  enthusiasm: number
-  goalTransmission: number
-  count: number
-} | null
 
 type Props = {
   sessions: Session[]
@@ -29,12 +20,12 @@ const CompletedSessions: React.FC<Props> = ({ sessions, user, onOpenRating, onOp
           const avg = calcAvg(s.feedbacks)
           return (
             <div key={s.id} className="border rounded p-3">
-              <div className="font-medium">Program #{s.programId}</div>
+              <div className="font-medium">{s.subject}</div>
               <div className="text-sm text-gray-600">Hoàn thành lúc {s.completedAt || s.time}</div>
 
               {user.role === 'student' && (
                 <div className="mt-2 flex gap-2">
-                  <button className="px-3 py-1 border rounded" onClick={() => onOpenRating(s)}>
+                  <button className="px-3 py-1 border rounded w-28 text-center" onClick={() => onOpenRating(s)}>
                     Đánh giá
                   </button>
                 </div>
@@ -57,12 +48,12 @@ const CompletedSessions: React.FC<Props> = ({ sessions, user, onOpenRating, onOp
                     )}
                   </div>
 
-                  <button className="px-3 py-1 border rounded" onClick={() => onOpenFeedback(s)}>
+                  <button className="px-3 py-1 border rounded w-40 text-center" onClick={() => onOpenFeedback(s)}>
                     Xem feedback
                   </button>
 
                   <button
-                    className="px-3 py-1 border border-blue-600 text-blue-600 rounded"
+                    className="px-3 py-1 border w-40 border-blue-600 text-blue-600 rounded"
                     onClick={() => onOpenReport(s)}
                   >
                     📝 Tạo biên bản

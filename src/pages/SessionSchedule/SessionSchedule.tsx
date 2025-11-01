@@ -10,6 +10,7 @@ import ReportModal from './components/ReportModal'
 import PendingSessions from './components/PendingSessions'
 import RatingModal from './components/RatingModal'
 import ViewFeedbackModal from './components/ViewFeedbackModal'
+import ScheduleSes from './components/ScheduleSes/ScheduleSes'
 
 export default function SessionSchedule() {
   const { user } = useContext(AppContext)
@@ -37,6 +38,9 @@ export default function SessionSchedule() {
   const [reportSession, setReportSession] = React.useState<Session | null>(null)
   const [reportText, setReportText] = React.useState('')
 
+  // add schedule modal
+  const [addScheduleOpen, setAddScheduleOpen] = React.useState(false)
+
   // load sessions
   React.useEffect(() => {
     reloadSessions()
@@ -52,20 +56,30 @@ export default function SessionSchedule() {
     else if (user.role === 'tutor') setSessions(sessionApi.getSessionsByTutor(user.id))
   }
 
-  if (!user) return <div className="p-6">Vui lòng đăng nhập để xem lịch học.</div>
+  if (!user) return <div className='p-6'>Vui lòng đăng nhập để xem lịch học.</div>
 
   const confirmed = sessions.filter((s) => s.status === 'confirmed')
   const pending = sessions.filter((s) => s.status === 'pending')
   const completed = sessions.filter((s) => s.status === 'completed')
 
-  // Handlers for actions invoked from child components
+  // Handlers
   function handleCancel(sessionId: number) {
     sessionApi.cancelSession(sessionId)
     reloadSessions()
   }
 
-  function handleConfirm(sessionId: number) {
-    sessionApi.confirmSession(sessionId)
+  function handleConfirm(sessionId: number, updatedData?: Partial<Session>) {
+    if (updatedData) {
+      sessionApi.confirmSession(sessionId)
+      const s = sessionApi.getAllSessions().find((x) => x.id === sessionId)
+      if (s) {
+        s.time = updatedData.time!
+        s.mode = updatedData.mode as any
+        s.location = updatedData.location
+      }
+    } else {
+      sessionApi.confirmSession(sessionId)
+    }
     reloadSessions()
   }
 
@@ -120,23 +134,62 @@ export default function SessionSchedule() {
   }
 
   return (
-    <div className="p-6 space-y-8">
-      <h2 className="text-2xl font-semibold mb-4">
-        {user.role === 'tutor' ? 'Lịch dạy' : 'Lịch học'} ({user.role})
-      </h2>
+    <div className='p-6 space-y-8'>
+      <div className='flex items-center justify-between mb-4'>
+        <h2 className='text-2xl font-semibold'>
+          {user.role === 'tutor' ? 'Lịch dạy' : 'Lịch học'} ({user.role})
+        </h2>
 
-      <ConfirmedSessions
-        sessions={confirmed}
-        user={user}
-        onCancel={handleCancel}
+        {user.role === 'tutor' && (
+          <button
+            className='px-3 py-1 border w-40 border-blue-600 bg-blue-600 text-white rounded hover:bg-blue-700'
+            onClick={() => setAddScheduleOpen(true)}
+          >
+            + Thêm lịch
+          </button>
+        )}
+      </div>
+
+      <ScheduleSes
+        open={addScheduleOpen}
+        onClose={() => setAddScheduleOpen(false)}
+        onSubmit={(data) => {
+          if (!user) return
+          data.studentIds.forEach((sid) => {
+            const newSession = {
+              id: Date.now() + sid,
+              programId: data.programId,
+              tutorId: user.id,
+              studentId: sid,
+              mode: data.mode,
+              location: data.mode === 'offline' ? data.location || 'Chưa rõ' : 'Online',
+              time: data.time.replace('T', ' '),
+              status: 'confirmed',
+              createdAt: new Date().toISOString().slice(0, 10),
+              confirmedAt: new Date().toISOString().slice(0, 10),
+              subject: 'Môn học mới'
+            }
+            sessionApi.getAllSessions().push(newSession)
+          })
+          setAddScheduleOpen(false)
+          reloadSessions()
+          alert('Thêm lịch dạy mới thành công!')
+        }}
+        mockPrograms={[
+          { id: 1, title: 'Toán cao cấp' },
+          { id: 2, title: 'Lập trình C++' },
+          { id: 3, title: 'Vật lý đại cương' }
+        ]}
+        mockStudents={[
+          { id: 101, name: 'Nguyễn Văn A' },
+          { id: 102, name: 'Trần Thị B' },
+          { id: 103, name: 'Phạm Văn C' }
+        ]}
       />
 
-      <PendingSessions
-        sessions={pending}
-        user={user}
-        onConfirm={handleConfirm}
-        onDelete={handleCancel}
-      />
+      <ConfirmedSessions sessions={confirmed} user={user} onCancel={handleCancel} />
+
+      <PendingSessions sessions={pending} user={user} onConfirm={handleConfirm} onDelete={handleCancel} />
 
       <CompletedSessions
         sessions={completed}

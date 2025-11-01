@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { docApi } from 'src/apis/doc.api'
 import type { DocItem } from 'src/types/doc.type'
-import { Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, Share2 } from 'lucide-react'
 
 export default function Documents() {
   const [docs, setDocs] = useState<DocItem[]>([])
@@ -25,13 +25,28 @@ export default function Documents() {
     setDocs(docApi.searchDocs(keyword))
   }
 
-  // Xử lý tải xuống
   const handleDownload = (id: string) => {
     const msg = docApi.downloadDoc(id)
     setMessage(msg)
   }
 
-  // Ẩn/hiện mô tả tài liệu
+  const handleShare = (doc: DocItem) => {
+    const shareText = `📘 Tài liệu: ${doc.title}\nTác giả: ${doc.author}\nMôn học: ${doc.subject}\nChủ đề: ${doc.topic}`
+    if (navigator.share) {
+      navigator
+        .share({
+          title: doc.title,
+          text: shareText,
+          url: window.location.href
+        })
+        .then(() => setMessage(`Đã chia sẻ "${doc.title}" thành công!`))
+        .catch(() => setMessage('Chia sẻ bị hủy hoặc không thành công.'))
+    } else {
+      navigator.clipboard.writeText(shareText)
+      setMessage(`Đã sao chép nội dung chia sẻ của "${doc.title}" vào clipboard!`)
+    }
+  }
+
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id)
   }
@@ -40,7 +55,6 @@ export default function Documents() {
     <div className='p-6 space-y-6'>
       <h2 className='text-2xl font-semibold mb-4'>Thư viện tài liệu (HCMUT_LIBRARY)</h2>
 
-      {/* --- Thanh tìm kiếm --- */}
       <div className='flex gap-2 items-center bg-white p-4 rounded shadow'>
         <input
           type='text'
@@ -57,10 +71,8 @@ export default function Documents() {
         </button>
       </div>
 
-      {/* --- Thông báo --- */}
       {message && <div className='text-sm text-gray-600'>{message}</div>}
 
-      {/* --- Danh sách tài liệu --- */}
       <div className='bg-white p-4 rounded shadow'>
         {docs.length === 0 ? (
           <div className='text-gray-500 text-sm'>Không tìm thấy tài liệu phù hợp.</div>
@@ -107,6 +119,12 @@ export default function Documents() {
                       onClick={() => handleDownload(d.id)}
                     >
                       Tải
+                    </button>
+                    <button
+                      className='flex items-center gap-1 px-3 py-1 border rounded hover:bg-gray-100 text-sm'
+                      onClick={() => handleShare(d)}
+                    >
+                      <Share2 size={14} /> Chia sẻ
                     </button>
                   </div>
                 </div>

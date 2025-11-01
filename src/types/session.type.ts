@@ -32,9 +32,19 @@ export type Session = {
   createdAt: string
   confirmedAt?: string
   completedAt?: string
+  subject: string
   programInfo?: Program
   tutorInfo?: TutorSummary
   studentInfo?: User
   feedbacks?: SessionFeedback[]
   meetingReport?: string
 }
+
+export type Avg = {
+  practicalRelevance: number
+  knowledgeLoad: number
+  clarity: number
+  enthusiasm: number
+  goalTransmission: number
+  count: number
+} | null

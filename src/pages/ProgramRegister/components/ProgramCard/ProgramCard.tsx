@@ -3,7 +3,6 @@ import type { Program } from 'src/types/program.type'
 export default function ProgramCard({
   program,
   onViewDetail,
-  onRegister
 }: {
   program: Program
   onViewDetail: () => void
@@ -33,17 +32,6 @@ export default function ProgramCard({
           <button className='px-3 py-1 bg-blue-600 text-white rounded' onClick={onViewDetail}>
             Xem chi tiết
           </button>
-
-          {/* 🔹 Ẩn nút đăng ký nếu không có onRegister */}
-          {onRegister && (
-            <button
-              className='px-3 py-1 border rounded'
-              onClick={onRegister}
-              disabled={program.availableSlots <= 0}
-            >
-              {program.availableSlots <= 0 ? 'Hết chỗ' : 'Đăng ký tham gia'}
-            </button>
-          )}
         </div>
       </div>
     </div>

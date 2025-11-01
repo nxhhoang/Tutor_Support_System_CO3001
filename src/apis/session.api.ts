@@ -12,6 +12,7 @@ const sessions: Session[] = [
     status: 'confirmed',
     createdAt: '2025-10-25',
     confirmedAt: '2025-10-26',
+    subject: 'Toán cao cấp'
   },
   {
     id: 2,
@@ -23,6 +24,7 @@ const sessions: Session[] = [
     time: '2025-11-03 09:00',
     status: 'pending',
     createdAt: '2025-10-27',
+    subject: 'Cấu trúc dữ liệu'
   },
   {
     id: 3,
@@ -35,6 +37,7 @@ const sessions: Session[] = [
     status: 'completed',
     createdAt: '2025-10-10',
     completedAt: '2025-10-20',
+    subject: 'Mạng máy tính',
     feedbacks: [
       {
         id: 1,
@@ -62,7 +65,8 @@ const sessions: Session[] = [
     time: '2025-11-05 19:00',
     status: 'confirmed',
     createdAt: '2025-10-29',
-    confirmedAt: '2025-10-30'
+    confirmedAt: '2025-10-30',
+    subject: 'Tiếng Anh giao tiếp'
   },
   {
     id: 5,
@@ -73,7 +77,8 @@ const sessions: Session[] = [
     location: 'C6-202',
     time: '2025-11-10 08:00',
     status: 'pending',
-    createdAt: '2025-10-28'
+    createdAt: '2025-10-28',
+    subject: 'Vật lý đại cương'
   },
   {
     id: 6,
@@ -86,6 +91,7 @@ const sessions: Session[] = [
     status: 'completed',
     createdAt: '2025-10-01',
     completedAt: '2025-10-15',
+    subject: 'Phân tích thiết kế hệ thống',
     feedbacks: [
       {
         id: 2,
@@ -113,7 +119,8 @@ const sessions: Session[] = [
     time: '2025-11-12 13:30',
     status: 'confirmed',
     createdAt: '2025-10-29',
-    confirmedAt: '2025-10-30'
+    confirmedAt: '2025-10-30',
+    subject: 'Nguyên lý máy học'
   },
   {
     id: 8,
@@ -126,6 +133,7 @@ const sessions: Session[] = [
     status: 'completed',
     createdAt: '2025-09-28',
     completedAt: '2025-10-10',
+    subject: 'Lập trình hướng đối tượng',
     feedbacks: [
       {
         id: 3,
@@ -144,6 +152,7 @@ const sessions: Session[] = [
     ]
   }
 ]
+
 
 export const sessionApi = {
   getAllSessions: () => sessions,
