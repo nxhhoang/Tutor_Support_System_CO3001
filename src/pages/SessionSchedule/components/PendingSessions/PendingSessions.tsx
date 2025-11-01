@@ -59,7 +59,7 @@ const PendingSessions: React.FC<Props> = ({ sessions, user, onConfirm, onDelete 
             {user.role === 'student' && (
               <div className="mt-2 space-x-2">
                 <button
-                  className="px-3 py-1 border rounded w-28 text-center"
+                  className="px-3 py-1 border rounded w-35 text-center"
                   onClick={() => handleOpenForm(s.id)}
                 >
                   {openFormId === s.id ? 'Đóng form' : 'Đặt lịch'}
@@ -139,7 +139,7 @@ const PendingSessions: React.FC<Props> = ({ sessions, user, onConfirm, onDelete 
             {user.role === 'tutor' && (
               <div className="mt-2 space-x-2">
                 <button
-                  className="px-3 py-1 border w-28 text-center text-red-600 rounded"
+                  className="px-3 py-1 border w-35 text-center text-red-600 rounded"
                   onClick={() => onDelete(s.id)}
                 >
                   Xóa

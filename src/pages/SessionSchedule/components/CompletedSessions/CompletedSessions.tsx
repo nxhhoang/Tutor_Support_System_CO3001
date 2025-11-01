@@ -10,6 +10,7 @@ type Props = {
   onOpenFeedback: (session: Session) => void
   onOpenReport: (session: Session) => void
   calcAvg: (feedbacks: SessionFeedback[] | undefined) => Avg
+  onOpenTutorRating: (session: Session) => void
 }
 
 const CompletedSessions: React.FC<Props> = ({
@@ -18,7 +19,8 @@ const CompletedSessions: React.FC<Props> = ({
   onOpenRating,
   onOpenFeedback,
   onOpenReport,
-  calcAvg
+  calcAvg,
+  onOpenTutorRating
 }) => {
   return (
     <section>
@@ -33,7 +35,7 @@ const CompletedSessions: React.FC<Props> = ({
 
               {user.role === 'student' && (
                 <div className='mt-2 flex items-center gap-3 flex-wrap'>
-                  <button className='px-3 py-1 border rounded w-28 text-center' onClick={() => onOpenRating(s)}>
+                  <button className='px-3 py-1 border rounded w-35 text-center' onClick={() => onOpenRating(s)}>
                     Đánh giá
                   </button>
 
@@ -48,7 +50,7 @@ const CompletedSessions: React.FC<Props> = ({
                       }
                     }}
                   >
-                    Xem đánh giá từ giảng viên
+                    Xem đánh giá
                   </button>
                 </div>
               )}
@@ -86,24 +88,7 @@ const CompletedSessions: React.FC<Props> = ({
                     className={`px-3 py-1 border rounded w-40 text-center text-sm ${
                       (s.tutorFeedbacks?.length ?? 0) > 0 ? 'bg-green-100 border-green-600' : ''
                     }`}
-                    onClick={() => {
-                      if ((s.tutorFeedbacks?.length ?? 0) > 0) {
-                        const fb = s.tutorFeedbacks![0]
-                        alert(`Bạn đã đánh giá sinh viên này: ${fb.rating}/5\n"${fb.comment || 'Không có'}"`)
-                      } else {
-                        const rating = Number(prompt('Nhập điểm đánh giá (1-5):', '5'))
-                        const comment = prompt('Nhận xét (tùy chọn):', '')
-                        if (!isNaN(rating))
-                          sessionApi.addTutorFeedback(s.id, {
-                            tutorId: user.id,
-                            studentId: s.studentId,
-                            sessionId: s.id,
-                            rating,
-                            comment: comment || ''
-                          })
-                        alert('Đánh giá học viên thành công!')
-                      }
-                    }}
+                    onClick={() => onOpenTutorRating(s)} 
                   >
                     {(s.tutorFeedbacks?.length ?? 0) > 0 ? 'Đã đánh giá học viên' : 'Đánh giá học viên'}
                   </button>

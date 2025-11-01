@@ -31,14 +31,14 @@ const ConfirmedSessions: React.FC<Props> = ({ sessions, user, onCancel }) => {
             </div>
 
             {user.role === 'student' && (
-              <button className="px-3 py-1 border w-28 bg-green-600 text-white rounded">Điểm danh</button>
+              <button className="px-3 py-1 border w-35 bg-green-600 text-white rounded">Điểm danh</button>
             )}
 
             {user.role === 'tutor' && (
               <div className="flex gap-2 mt-2">
-                <button className="px-3 py-1 border rounded w-28 text-center">Đổi lịch</button>
+                <button className="px-3 py-1 border rounded w-35 text-center">Đổi lịch</button>
                 <button
-                  className="px-3 py-1 border w-28 text-red-600 rounded"
+                  className="px-3 py-1 border w-35 text-red-600 rounded"
                   onClick={() => onCancel(s.id)}
                 >
                   Hủy

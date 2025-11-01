@@ -190,7 +190,6 @@ export const sessionApi = {
     if (!s) return null
     const newFeedback: SessionFeedback = {
       id: Date.now(), // simple id
-      sessionId,
       createdAt: new Date().toISOString().slice(0, 10),
       ...feedbackPayload
     }
@@ -216,7 +215,6 @@ export const sessionApi = {
     if (!s) return null
     const newFeedback: TutorFeedback = {
       id: Date.now(),
-      sessionId,
       createdAt: new Date().toISOString().slice(0, 10),
       ...feedbackPayload
     }

@@ -11,6 +11,7 @@ import PendingSessions from './components/PendingSessions'
 import RatingModal from './components/RatingModal'
 import ViewFeedbackModal from './components/ViewFeedbackModal'
 import ScheduleSes from './components/ScheduleSes/ScheduleSes'
+import TutorRatingModal from './components/TutorRatingModal'
 
 export default function SessionSchedule() {
   const { user } = useContext(AppContext)
@@ -28,6 +29,11 @@ export default function SessionSchedule() {
   })
   const [ratingComment, setRatingComment] = React.useState('')
 
+  const [tutorRatingOpen, setTutorRatingOpen] = React.useState(false)
+  const [tutorRatingSession, setTutorRatingSession] = React.useState<Session | null>(null)
+  const [tutorRatingScore, setTutorRatingScore] = React.useState(5)
+  const [tutorRatingComment, setTutorRatingComment] = React.useState('')
+
   // feedback modal (tutor)
   const [viewFeedbackOpen, setViewFeedbackOpen] = React.useState(false)
   const [viewFeedbackSession, setViewFeedbackSession] = React.useState<Session | null>(null)
@@ -44,7 +50,6 @@ export default function SessionSchedule() {
   // load sessions
   React.useEffect(() => {
     reloadSessions()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   function reloadSessions() {
@@ -54,6 +59,26 @@ export default function SessionSchedule() {
     }
     if (user.role === 'student') setSessions(sessionApi.getSessionsByStudent(user.id))
     else if (user.role === 'tutor') setSessions(sessionApi.getSessionsByTutor(user.id))
+  }
+
+  function openTutorRating(session: Session) {
+    setTutorRatingSession(session)
+    setTutorRatingScore(5)
+    setTutorRatingComment('')
+    setTutorRatingOpen(true)
+  }
+
+  function submitTutorRating() {
+    if (!tutorRatingSession || !user) return
+    sessionApi.addTutorFeedback(tutorRatingSession.id, {
+      tutorId: user.id,
+      studentId: tutorRatingSession.studentId,
+      sessionId: tutorRatingSession.id,
+      rating: tutorRatingScore,
+      comment: tutorRatingComment
+    })
+    setTutorRatingOpen(false)
+    reloadSessions()
   }
 
   if (!user) return <div className='p-6'>Vui lòng đăng nhập để xem lịch học.</div>
@@ -136,9 +161,7 @@ export default function SessionSchedule() {
   return (
     <div className='p-6 space-y-8'>
       <div className='flex items-center justify-between mb-4'>
-        <h2 className='text-2xl font-semibold'>
-          {user.role === 'tutor' ? 'Lịch dạy' : 'Lịch học'}
-        </h2>
+        <h2 className='text-2xl font-semibold'>{user.role === 'tutor' ? 'Lịch dạy' : 'Lịch học'}</h2>
 
         {user.role === 'tutor' && (
           <button
@@ -198,6 +221,7 @@ export default function SessionSchedule() {
         onOpenFeedback={openViewFeedback}
         onOpenReport={openReport}
         calcAvg={calcAvg}
+        onOpenTutorRating={openTutorRating} // 👈 thêm dòng này
       />
 
       <RatingModal
@@ -225,6 +249,17 @@ export default function SessionSchedule() {
         onChangeReportText={setReportText}
         onClose={() => setReportOpen(false)}
         onSubmit={submitReport}
+      />
+
+      <TutorRatingModal
+        open={tutorRatingOpen}
+        session={tutorRatingSession}
+        rating={tutorRatingScore}
+        comment={tutorRatingComment}
+        onChangeRating={setTutorRatingScore}
+        onChangeComment={setTutorRatingComment}
+        onClose={() => setTutorRatingOpen(false)}
+        onSubmit={submitTutorRating}
       />
     </div>
   )
