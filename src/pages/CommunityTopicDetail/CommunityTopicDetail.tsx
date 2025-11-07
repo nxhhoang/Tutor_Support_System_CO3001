@@ -1,7 +1,7 @@
 // src/pages/CommunityTopicDetail.tsx
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { getTopicById, addComment } from 'src/apis/topic.api'
+import { topicApi } from 'src/apis/topic.api'
 import type { Topic, Comment } from 'src/types/topic.type'
 
 export default function CommunityTopicDetail() {
@@ -12,7 +12,7 @@ export default function CommunityTopicDetail() {
 
   const reloadTopic = React.useCallback(() => {
     if (topicId) {
-      const found = getTopicById(topicId)
+      const found = topicApi.getTopicById(topicId)
       if (found) setTopic({ ...found })
     }
   }, [topicId])
@@ -25,7 +25,7 @@ export default function CommunityTopicDetail() {
 
   const handleComment = () => {
     if (!content.trim()) return
-    addComment(topic.id, content, 'Bạn', replyTo?.id)
+    topicApi.addComment(topic.id, content, 'Bạn', replyTo?.id)
     setContent('')
     setReplyTo(null)
     reloadTopic() // ✅ reload lại dữ liệu mới từ API giả

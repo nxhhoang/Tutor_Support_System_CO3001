@@ -35,43 +35,43 @@ let topics: Topic[] = [
   }
 ]
 
-// --- Các hàm mô phỏng API ---
+export const topicApi = {
+  getTopics(): Topic[] {
+    return topics
+  },
 
-export function getTopics(): Topic[] {
-  return topics
-}
+  getTopicById(id: string): Topic | undefined {
+    return topics.find((t) => t.id === id)
+  },
 
-export function getTopicById(id: string): Topic | undefined {
-  return topics.find((t) => t.id === id)
-}
+  addTopic(title: string, author: string): Topic {
+    const newTopic: Topic = {
+      id: Date.now().toString(),
+      title,
+      author,
+      createdAt: new Date().toISOString().slice(0, 10),
+      comments: []
+    }
+    topics = [newTopic, ...topics]
+    return newTopic
+  },
 
-export function addTopic(title: string, author: string): Topic {
-  const newTopic: Topic = {
-    id: Date.now().toString(),
-    title,
-    author,
-    createdAt: new Date().toISOString().slice(0, 10),
-    comments: []
+  addComment(topicId: string, content: string, author: string, parentId?: string): Comment | null {
+    const topic = topics.find((t) => t.id === topicId)
+    if (!topic) return null
+
+    const parent = topic.comments.find((c) => c.id === parentId)
+    console.log('parent', parent?.level)
+    const newComment: Comment = {
+      id: 'c' + Date.now(),
+      author,
+      content,
+      createdAt: new Date().toISOString().slice(0, 10),
+      level: parent ? parent.level + 1 : 0,
+      parentId
+    }
+
+    topic.comments.push(newComment)
+    return newComment
   }
-  topics = [newTopic, ...topics]
-  return newTopic
-}
-
-export function addComment(topicId: string, content: string, author: string, parentId?: string): Comment | null {
-  const topic = topics.find((t) => t.id === topicId)
-  if (!topic) return null
-
-  const parent = topic.comments.find((c) => c.id === parentId)
-  console.log('parent', parent?.level)
-  const newComment: Comment = {
-    id: 'c' + Date.now(),
-    author,
-    content,
-    createdAt: new Date().toISOString().slice(0, 10),
-    level: parent ? parent.level + 1 : 0,
-    parentId
-  }
-
-  topic.comments.push(newComment)
-  return newComment
 }

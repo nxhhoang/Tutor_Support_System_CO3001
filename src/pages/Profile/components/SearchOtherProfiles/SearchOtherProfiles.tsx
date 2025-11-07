@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
-import { ProfileViewAPI } from 'src/apis/profileView.api'
+import { profileViewApi } from 'src/apis/profileView.api'
 import type { ProfileView } from 'src/types/profileView.type'
 
 export default function SearchOtherProfiles() {
@@ -10,18 +10,13 @@ export default function SearchOtherProfiles() {
   const [filteredProfiles, setFilteredProfiles] = useState<ProfileView[]>([])
   const [loading, setLoading] = useState(true)
 
-  // 🔹 Lấy danh sách hồ sơ khi component mount
   useEffect(() => {
-    ProfileViewAPI.getAll().then((res) => {
-      if (res.success) {
-        setProfiles(res.data)
-        setFilteredProfiles(res.data) // ban đầu hiển thị toàn bộ
-      }
-      setLoading(false)
-    })
+    const data = profileViewApi.getAll()
+    setProfiles(data)
+    setFilteredProfiles(data)
+    setLoading(false)
   }, [])
 
-  // 🔹 Lọc danh sách theo từng ký tự nhập (live search)
   useEffect(() => {
     const q = query.trim().toLowerCase()
     if (!q) {
@@ -41,10 +36,9 @@ export default function SearchOtherProfiles() {
   return (
     <div className="mt-6 border-t pt-4">
       <h3 className="font-semibold text-blue-700 mb-2 text-center">
-        Tra cứu hồ sơ {user?.role === 'student' ? 'Tutor' : 'Sinh viên'}
+        Tra cứu hồ sơ
       </h3>
 
-      {/* 🔍 Ô tìm kiếm */}
       <div className="flex gap-2 mb-4">
         <input
           type="text"
@@ -61,7 +55,6 @@ export default function SearchOtherProfiles() {
         </button>
       </div>
 
-      {/* 🔹 Danh sách hồ sơ */}
       <h4 className="font-semibold text-blue-700 mb-2">
         {query ? 'Kết quả tìm kiếm' : 'Danh sách hồ sơ'}
       </h4>

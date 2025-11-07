@@ -1,8 +1,5 @@
 import type { Program, TutorSummary, ProgramRegistration } from 'src/types/program.type'
 
-/* ---------------------------
-   Mock data: tutors
-   --------------------------- */
 export const tutors: TutorSummary[] = [
   { id: 1, name: 'ThS. Trần X', major: 'Hệ điều hành', rating: 4.8, avail: ['28/10 14:00', '29/10 10:00'] },
   { id: 2, name: 'PGS. Lê Y', major: 'Cơ sở dữ liệu', rating: 4.6, avail: ['30/10 09:00', '31/10 15:00'] },
@@ -16,9 +13,6 @@ export const tutors: TutorSummary[] = [
   { id: 10, name: 'ThS. Devon Larrat', major: 'Kỹ năng sinh tồn', rating: 4.5, avail: ['01/11 09:00', '01/11 14:00'] }
 ]
 
-/* ---------------------------
-   Mock data: programs
-   --------------------------- */
 export let programs: Program[] = [
   {
     id: 101,
@@ -141,9 +135,6 @@ export const registrations: ProgramRegistration[] = [
 
 let nextRegistrationId = 300
 
-/* ---------------------------
-   Static data functions
-   --------------------------- */
 export const MockProgramAPI = {
   getPrograms: (params?: { q?: string; category?: string; field?: string }): Program[] => {
     let list = [...programs]

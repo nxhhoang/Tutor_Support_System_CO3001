@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ProfileViewAPI } from 'src/apis/profileView.api'
+import { profileViewApi } from 'src/apis/profileView.api'
 import type { ProfileView } from 'src/types/profileView.type'
 import logo from 'src/assets/images/logobachkhoa.png'
 
@@ -9,18 +9,13 @@ export default function ProfileViewer() {
   const [filteredProfiles, setFilteredProfiles] = useState<ProfileView[]>([])
   const [loading, setLoading] = useState(true)
 
-  // 🔹 Lấy danh sách hồ sơ khi component mount
   useEffect(() => {
-    ProfileViewAPI.getAll().then((res) => {
-      if (res.success) {
-        setProfiles(res.data)
-        setFilteredProfiles(res.data) // ban đầu hiển thị toàn bộ
-      }
-      setLoading(false)
-    })
+    const data = profileViewApi.getAll()
+    setProfiles(data)
+    setFilteredProfiles(data)
+    setLoading(false)
   }, [])
 
-  // 🔹 Lọc danh sách tự động mỗi khi người dùng nhập
   useEffect(() => {
     const q = query.trim().toLowerCase()
     if (!q) {
@@ -39,15 +34,13 @@ export default function ProfileViewer() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center py-10 px-6">
-      {/* 🔹 Header */}
       <div className="flex items-center mb-6">
         <img src={logo} alt="BK HCMUT" className="w-20 mr-4" />
         <h1 className="text-2xl font-semibold text-blue-700">
-          Tra cứu hồ sơ Sinh viên / Tutor
+          Tra cứu hồ sơ
         </h1>
       </div>
 
-      {/* 🔹 Hộp tìm kiếm */}
       <div className="bg-white shadow-md p-6 rounded w-full max-w-xl">
         <div className="flex gap-2 mb-4">
           <input
@@ -67,7 +60,6 @@ export default function ProfileViewer() {
           )}
         </div>
 
-        {/* 🔹 Kết quả tìm kiếm */}
         <h3 className="font-semibold text-blue-700 mb-2">
           {query ? 'Kết quả tìm kiếm' : 'Danh sách hồ sơ'}
         </h3>

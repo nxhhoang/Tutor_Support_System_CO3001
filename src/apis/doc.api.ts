@@ -104,10 +104,8 @@ const docs: DocItem[] = [
 ]
 
 export const docApi = {
-  /** Lấy toàn bộ tài liệu */
   getAllDocs: (): DocItem[] => docs,
 
-  /** Tìm kiếm tài liệu theo từ khóa (có thể khớp theo tên, môn, chủ đề, tác giả, từ khóa) */
   searchDocs: (keyword: string): DocItem[] => {
     if (!keyword.trim()) return docs
     const lower = keyword.toLowerCase()
@@ -125,7 +123,6 @@ export const docApi = {
     )
   },
 
-  /** Tải tài liệu */
   downloadDoc: (id: string): string => {
     const found = docs.find((d) => d.id === id)
     if (!found) return 'Không tìm thấy tài liệu.'

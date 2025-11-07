@@ -1,10 +1,6 @@
-// src/api/profileView.api.ts
 import type { ProfileView, ProfileSearchResult } from 'src/types/profileView.type'
 
-/**
- * Giả lập dữ liệu hồ sơ trong bộ nhớ cục bộ
- */
-const mockProfiles: ProfileView[] = [
+let profiles: ProfileView[] = [
   {
     id: 1,
     name: 'Nguyễn Văn A',
@@ -42,46 +38,33 @@ const mockProfiles: ProfileView[] = [
   }
 ]
 
-/**
- * Giả lập API lấy toàn bộ danh sách hồ sơ
- */
-export class ProfileViewAPI {
-  static getAll(): Promise<ProfileSearchResult> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, data: mockProfiles })
-      }, 200)
-    })
-  }
+export const profileViewApi = {
+  getAll(): ProfileView[] {
+    return profiles
+  },
 
-  /**
-   * Tìm kiếm theo tên hoặc email (giả lập server-side)
-   */
-  static search(query: string): Promise<ProfileSearchResult> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const q = query.trim().toLowerCase()
-        const results = mockProfiles.filter(
-          u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
-        )
-        resolve({
-          success: true,
-          data: results,
-          message: results.length ? undefined : 'Không tìm thấy hồ sơ phù hợp.'
-        })
-      }, 300)
-    })
-  }
+  getById(id: number): ProfileView | undefined {
+    return profiles.find(p => p.id === id)
+  },
 
-  /**
-   * Tìm hồ sơ chi tiết theo ID
-   */
-  static getById(id: number): Promise<ProfileView | null> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const found = mockProfiles.find(u => u.id === id) || null
-        resolve(found)
-      }, 200)
-    })
+  search(query: string): ProfileSearchResult {
+    const q = query.trim().toLowerCase()
+    const results = profiles.filter(
+      p => p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q)
+    )
+    return {
+      success: true,
+      data: results,
+      message: results.length ? undefined : 'Không tìm thấy hồ sơ phù hợp.'
+    }
+  },
+
+  addProfile(profile: Omit<ProfileView, 'id'>): ProfileView {
+    const newProfile: ProfileView = {
+      ...profile,
+      id: Date.now()
+    }
+    profiles = [newProfile, ...profiles]
+    return newProfile
   }
 }

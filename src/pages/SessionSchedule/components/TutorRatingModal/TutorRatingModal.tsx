@@ -35,7 +35,7 @@ const TutorRatingModal: React.FC<Props> = ({
       <div className='bg-white w-full max-w-lg rounded shadow-lg overflow-auto max-h-[90vh] p-4'>
         <div className='flex justify-between items-center mb-3'>
           <h3 className='text-lg font-medium'>
-            {isReadOnly ? 'Xem đánh giá học viên' : 'Đánh giá học viên'} — Môn {session.subject}
+            {isReadOnly ? 'Xem đánh giá học viên' : 'Đánh giá học viên'} - {session.subject}
           </h3>
           <button className='px-2 py-1 border rounded' onClick={onClose}>
             Đóng

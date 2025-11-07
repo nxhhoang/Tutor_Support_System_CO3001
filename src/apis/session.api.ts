@@ -181,7 +181,6 @@ export const sessionApi = {
     if (s) s.status = 'completed'
   },
 
-  // addFeedback: thêm feedback và trả về feedback mới
   addFeedback: (
     sessionId: number,
     feedbackPayload: Omit<SessionFeedback, 'id' | 'createdAt'>
@@ -198,7 +197,6 @@ export const sessionApi = {
     return newFeedback
   },
 
-  // helper để lấy feedbacks
   getFeedbacksBySession: (sessionId: number): SessionFeedback[] => {
     const s = sessions.find((x) => x.id === sessionId)
     return s?.feedbacks ? [...s.feedbacks] : []

@@ -29,7 +29,7 @@ const RatingModal: React.FC<Props> = ({ open, session, ratings, onChangeRatings,
     <div className="fixed inset-0 bg-black/40 flex items-start md:items-center justify-center p-4 z-50">
       <div className="bg-white w-full max-w-lg rounded shadow-lg overflow-auto max-h-[90vh] p-4">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-lg font-medium">Đánh giá session — Program #{session.programId}</h3>
+          <h3 className="text-lg font-medium">Đánh giá session — {session.subject}</h3>
           <button className="px-2 py-1 border rounded" onClick={onClose}>Đóng</button>
         </div>
 

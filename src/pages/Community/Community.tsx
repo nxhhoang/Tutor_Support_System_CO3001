@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getTopics, addTopic } from 'src/apis/topic.api'
+import { topicApi } from 'src/apis/topic.api'
 import type { Topic } from 'src/types/topic.type'
 import path from 'src/constants/path'
 
@@ -11,12 +11,12 @@ export default function Community() {
   const navigate = useNavigate()
 
   React.useEffect(() => {
-    setTopics(getTopics())
+    setTopics(topicApi.getTopics())
   }, [])
 
   function createTopic() {
     if (!title.trim()) return alert('Nhập tiêu đề')
-    const newTopic = addTopic(title, 'Bạn')
+    const newTopic = topicApi.addTopic(title, 'Bạn')
     setTopics([newTopic, ...topics])
     setTitle('')
   }

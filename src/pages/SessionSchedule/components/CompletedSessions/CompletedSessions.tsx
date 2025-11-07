@@ -1,5 +1,4 @@
 import React from 'react'
-import { sessionApi } from 'src/apis/session.api'
 import type { Session, SessionFeedback, Avg } from 'src/types/session.type'
 import type { BaseUser } from 'src/types/user.type'
 
@@ -41,14 +40,7 @@ const CompletedSessions: React.FC<Props> = ({
 
                   <button
                     className='px-3 py-1 border rounded w-40 text-center'
-                    onClick={() => {
-                      const tFeedbacks = sessionApi.getTutorFeedbackBySession(s.id)
-                      if (tFeedbacks.length === 0) alert('Giảng viên chưa đánh giá.')
-                      else {
-                        const fb = tFeedbacks[0]
-                        alert(`Giảng viên đánh giá: ${fb.rating}/5\nNhận xét: ${fb.comment || 'Không có'}`)
-                      }
-                    }}
+                    onClick={() => onOpenTutorRating(s)}
                   >
                     Xem đánh giá
                   </button>
@@ -74,7 +66,7 @@ const CompletedSessions: React.FC<Props> = ({
                   </div>
 
                   <button className='px-3 py-1 border rounded w-40 text-center' onClick={() => onOpenFeedback(s)}>
-                    Xem feedback
+                    Xem đánh giá
                   </button>
 
                   <button

@@ -42,7 +42,7 @@ export type Session = {
   createdAt: string
   confirmedAt?: string
   completedAt?: string
-  subject: string
+  subject?: string
   programInfo?: Program
   tutorInfo?: TutorSummary
   studentInfo?: User
