@@ -96,7 +96,7 @@ const docs: DocItem[] = [
     title: 'Hướng dẫn sử dụng Git.pdf',
     size: '3.1MB',
     uploadedAt: '2024-10-10',
-    author: 'CLB Dev UIT',
+    author: 'CLB Dev HCMUT',
     subject: 'Công cụ lập trình',
     topic: 'Quản lý mã nguồn',
     keywords: ['git', 'github', 'commit', 'branch', 'merge'],

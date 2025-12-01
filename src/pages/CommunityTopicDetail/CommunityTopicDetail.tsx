@@ -1,4 +1,3 @@
-// src/pages/CommunityTopicDetail.tsx
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { topicApi } from 'src/apis/topic.api'
@@ -9,11 +8,21 @@ export default function CommunityTopicDetail() {
   const [topic, setTopic] = React.useState<Topic | null>(null)
   const [content, setContent] = React.useState('')
   const [replyTo, setReplyTo] = React.useState<Comment | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = React.useState(false)
 
-  const reloadTopic = React.useCallback(() => {
-    if (topicId) {
-      const found = topicApi.getTopicById(topicId)
-      if (found) setTopic({ ...found })
+  // Hàm load lại dữ liệu từ API
+  const reloadTopic = React.useCallback(async () => {
+    if (!topicId) return
+    try {
+      setLoading(true)
+      const res = await topicApi.getTopicById(topicId)
+      setTopic(res.data.data)
+    } catch (error) {
+      console.error('Lỗi khi tải chi tiết chủ đề:', error)
+      setTopic(null)
+    } finally {
+      setLoading(false)
     }
   }, [topicId])
 
@@ -23,12 +32,18 @@ export default function CommunityTopicDetail() {
 
   if (!topic) return <div className='p-6 text-gray-500'>Chủ đề không tồn tại.</div>
 
-  const handleComment = () => {
-    if (!content.trim()) return
-    topicApi.addComment(topic.id, content, 'Bạn', replyTo?.id)
-    setContent('')
-    setReplyTo(null)
-    reloadTopic() // ✅ reload lại dữ liệu mới từ API giả
+  const handleComment = async () => {
+    if (!content.trim() || !topic) return
+
+    try {
+      await topicApi.addComment(topic.id, content, 'Bạn', replyTo?.id)
+      setContent('')
+      setReplyTo(null)
+      await reloadTopic() // reload lại danh sách comment từ server
+    } catch (error) {
+      console.error('Lỗi khi gửi bình luận:', error)
+      alert('Không thể gửi bình luận. Vui lòng thử lại.')
+    }
   }
 
   const renderComment = (c: Comment) => (

@@ -1,4 +1,3 @@
-// src/types/profileView.type.ts
 import type { BaseUser } from './user.type'
 
 export interface ProfileView extends BaseUser {
@@ -12,7 +11,6 @@ export interface ProfileView extends BaseUser {
   class?: string
 }
 
-// Gợi ý kiểu phản hồi API tìm kiếm
 export interface ProfileSearchResult {
   success: boolean
   data: ProfileView[]

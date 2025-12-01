@@ -8,17 +8,37 @@ export default function Community() {
   const [topics, setTopics] = React.useState<Topic[]>([])
   const [q, setQ] = React.useState('')
   const [title, setTitle] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
   const navigate = useNavigate()
 
   React.useEffect(() => {
-    setTopics(topicApi.getTopics())
+    const fetchTopics = async () => {
+      try {
+        setLoading(true)
+        const res = await topicApi.getTopics()
+
+        setTopics(res.data.data) 
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách chủ đề:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTopics()
   }, [])
 
-  function createTopic() {
+  async function createTopic() {
+    console.log('Tạo chủ đề với tiêu đề:', title)
     if (!title.trim()) return alert('Nhập tiêu đề')
-    const newTopic = topicApi.addTopic(title, 'Bạn')
-    setTopics([newTopic, ...topics])
-    setTitle('')
+    
+    try {
+      const res = await topicApi.addTopic(title, 'Bạn')
+      setTopics([res.data.data, ...topics])
+      setTitle('')
+    } catch (error) {
+      console.error('Lỗi khi tạo chủ đề:', error)
+      alert('Không thể tạo chủ đề. Vui lòng thử lại.')
+    }
   }
 
   const filtered = topics.filter((t) => t.title.toLowerCase().includes(q.toLowerCase()))
@@ -43,26 +63,34 @@ export default function Community() {
             />
             <button className='px-3 py-2 border rounded'>Tìm</button>
           </div>
-          <button className='mt-3 px-4 py-2 bg-blue-600 text-white rounded' onClick={createTopic}>
+          <button 
+            className='mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-300' 
+            onClick={createTopic}
+            disabled={!title.trim()}
+          >
             Đăng chủ đề
           </button>
         </div>
 
-        <div className='space-y-3'>
-          {filtered.map((t) => (
-            <div
-              key={t.id}
-              className='p-3 border rounded cursor-pointer hover:bg-gray-50'
-              onClick={() => navigate(path.communityTopic.replace(':topicId', t.id))}
-            >
-              <div className='font-medium'>{t.title}</div>
-              <div className='text-xs text-gray-500'>
-                Bởi {t.author} • {t.createdAt} • {t.comments.length} bình luận
+        {loading ? (
+          <div className='text-center py-4 text-gray-500'>Đang tải...</div>
+        ) : (
+          <div className='space-y-3'>
+            {filtered.map((t) => (
+              <div
+                key={t.id}
+                className='p-3 border rounded cursor-pointer hover:bg-gray-50 transition-colors'
+                onClick={() => navigate(path.communityTopic.replace(':topicId', t.id))}
+              >
+                <div className='font-medium'>{t.title}</div>
+                <div className='text-xs text-gray-500'>
+                  Bởi {t.author} • {t.createdAt} • {t.comments ? t.comments.length : 0} bình luận
+                </div>
               </div>
-            </div>
-          ))}
-          {filtered.length === 0 && <div className='text-sm text-gray-500'>Không có chủ đề phù hợp.</div>}
-        </div>
+            ))}
+            {filtered.length === 0 && <div className='text-sm text-gray-500'>Không có chủ đề phù hợp.</div>}
+          </div>
+        )}
       </div>
     </div>
   )
