@@ -9,13 +9,11 @@ export type SessionFeedback = {
   id: number
   studentId: number
   sessionId: number
-  ratingCriteria: {
-    practicalRelevance: number // Bài giảng bám sát thực tế
-    knowledgeLoad: number // Khối lượng kiến thức phù hợp
-    clarity: number // Nội dung rõ ràng, logic
-    enthusiasm: number // Giảng viên nhiệt tình
-    goalTransmission: number // Mục tiêu truyền đạt rõ
-  }
+  practicalRelevance: number
+  knowledgeLoad: number
+  clarity: number
+  enthusiasm: number
+  goalTransmission: number
   comment?: string
   createdAt: string
 }

@@ -17,7 +17,6 @@ export default function SessionSchedule() {
   const { user } = useContext(AppContext)
   const [sessions, setSessions] = React.useState<Session[]>([])
 
-  // rating modal (student)
   const [ratingOpen, setRatingOpen] = React.useState(false)
   const [ratingSession, setRatingSession] = React.useState<Session | null>(null)
   const [ratings, setRatings] = React.useState({
@@ -34,31 +33,36 @@ export default function SessionSchedule() {
   const [tutorRatingScore, setTutorRatingScore] = React.useState(5)
   const [tutorRatingComment, setTutorRatingComment] = React.useState('')
 
-  // feedback modal (tutor)
   const [viewFeedbackOpen, setViewFeedbackOpen] = React.useState(false)
   const [viewFeedbackSession, setViewFeedbackSession] = React.useState<Session | null>(null)
   const [viewFeedbacks, setViewFeedbacks] = React.useState<SessionFeedback[]>([])
 
-  // meeting report modal (tutor)
   const [reportOpen, setReportOpen] = React.useState(false)
   const [reportSession, setReportSession] = React.useState<Session | null>(null)
   const [reportText, setReportText] = React.useState('')
 
-  // add schedule modal
   const [addScheduleOpen, setAddScheduleOpen] = React.useState(false)
 
-  // load sessions
   React.useEffect(() => {
     reloadSessions()
   }, [user])
 
-  function reloadSessions() {
+  async function reloadSessions() {
     if (!user) {
       setSessions([])
       return
     }
-    if (user.role === 'student') setSessions(sessionApi.getSessionsByStudent(user.id))
-    else if (user.role === 'tutor') setSessions(sessionApi.getSessionsByTutor(user.id))
+    try {
+      let res
+      if (user.role === 'student') {
+        res = await sessionApi.getSessionsByStudent(user.id)
+      } else {
+        res = await sessionApi.getSessionsByTutor(user.id)
+      }
+      setSessions(res.data.data)
+    } catch (error) {
+      console.error('Lỗi tải danh sách session:', error)
+    }
   }
 
   function openTutorRating(session: Session) {
@@ -68,17 +72,22 @@ export default function SessionSchedule() {
     setTutorRatingOpen(true)
   }
 
-  function submitTutorRating() {
+  async function submitTutorRating() {
     if (!tutorRatingSession || !user) return
-    sessionApi.addTutorFeedback(tutorRatingSession.id, {
-      tutorId: user.id,
-      studentId: tutorRatingSession.studentId,
-      sessionId: tutorRatingSession.id,
-      rating: tutorRatingScore,
-      comment: tutorRatingComment
-    })
-    setTutorRatingOpen(false)
-    reloadSessions()
+    try {
+      await sessionApi.addTutorFeedback(tutorRatingSession.id, {
+        tutorId: user.id,
+        studentId: tutorRatingSession.studentId,
+        sessionId: tutorRatingSession.id,
+        rating: tutorRatingScore,
+        comment: tutorRatingComment
+      })
+      setTutorRatingOpen(false)
+      reloadSessions()
+    } catch (error) {
+      console.error('Lỗi gửi đánh giá sinh viên:', error)
+      alert('Không thể gửi đánh giá.')
+    }
   }
 
   if (!user) return <div className='p-6'>Vui lòng đăng nhập để xem lịch học.</div>
@@ -87,25 +96,25 @@ export default function SessionSchedule() {
   const pending = sessions.filter((s) => s.status === 'pending')
   const completed = sessions.filter((s) => s.status === 'completed')
 
-  // Handlers
-  function handleCancel(sessionId: number) {
-    sessionApi.cancelSession(sessionId)
-    reloadSessions()
+
+  async function handleCancel(sessionId: number) {
+    try {
+      await sessionApi.cancelSession(sessionId)
+      reloadSessions()
+    } catch (error) {
+      console.error(error)
+      alert('Hủy lịch thất bại')
+    }
   }
 
-  function handleConfirm(sessionId: number, updatedData?: Partial<Session>) {
-    if (updatedData) {
-      sessionApi.confirmSession(sessionId)
-      const s = sessionApi.getAllSessions().find((x) => x.id === sessionId)
-      if (s) {
-        s.time = updatedData.time!
-        s.mode = updatedData.mode as any
-        s.location = updatedData.location
-      }
-    } else {
-      sessionApi.confirmSession(sessionId)
+  async function handleConfirm(sessionId: number, updatedData?: Partial<Session>) {
+    try {
+      await sessionApi.confirmSession(sessionId)
+      reloadSessions()
+    } catch (error) {
+      console.error(error)
+      alert('Xác nhận lịch thất bại')
     }
-    reloadSessions()
   }
 
   function openRating(session: Session) {
@@ -121,28 +130,35 @@ export default function SessionSchedule() {
     setRatingOpen(true)
   }
 
-  function submitRating() {
+  async function submitRating() {
     if (!ratingSession || !user) return
+    
     const payload = {
       studentId: user.id,
       sessionId: ratingSession.id,
-      ratingCriteria: { ...ratings },
-      comment: ratingComment
+      comment: ratingComment,
+      ...ratings
     }
-    const newFeedback = sessionApi.addFeedback(ratingSession.id, payload as any)
-    if (newFeedback) {
-      reloadSessions()
+
+    try {
+      await sessionApi.addFeedback(ratingSession.id, payload as any)
       setRatingOpen(false)
-    } else {
-      alert('Không thể lưu đánh giá (session không tìm thấy).')
+      reloadSessions()
+    } catch (error) {
+      console.error(error)
+      alert('Không thể lưu đánh giá.')
     }
   }
-
-  function openViewFeedback(session: Session) {
-    const f = sessionApi.getFeedbacksBySession(session.id)
-    setViewFeedbackSession(session)
-    setViewFeedbacks(f)
-    setViewFeedbackOpen(true)
+  async function openViewFeedback(session: Session) {
+    try {
+      const res = await sessionApi.getFeedbacksBySession(session.id)
+      setViewFeedbackSession(session)
+      setViewFeedbacks(res.data.data.feedbacks || [])
+      setViewFeedbackOpen(true)
+    } catch (error) {
+      console.error(error)
+      alert('Không thể tải đánh giá.')
+    }
   }
 
   function openReport(session: Session) {
@@ -151,11 +167,16 @@ export default function SessionSchedule() {
     setReportOpen(true)
   }
 
-  function submitReport() {
+  async function submitReport() {
     if (!reportSession) return
-    sessionApi.setMeetingReport(reportSession.id, reportText)
-    if (user?.role === 'tutor') reloadSessions()
-    setReportOpen(false)
+    try {
+      await sessionApi.setMeetingReport(reportSession.id, reportText)
+      if (user?.role === 'tutor') reloadSessions()
+      setReportOpen(false)
+    } catch (error) {
+      console.error(error)
+      alert('Lỗi lưu báo cáo.')
+    }
   }
 
   return (
@@ -176,27 +197,30 @@ export default function SessionSchedule() {
       <ScheduleSes
         open={addScheduleOpen}
         onClose={() => setAddScheduleOpen(false)}
-        onSubmit={(data) => {
+        onSubmit={async (data) => {
           if (!user) return
-          data.studentIds.forEach((sid) => {
-            const newSession = {
-              id: Date.now() + sid,
-              programId: data.programId,
-              tutorId: user.id,
-              studentId: sid,
-              mode: data.mode,
-              location: data.mode === 'offline' ? data.location || 'Chưa rõ' : 'Online',
-              time: data.time.replace('T', ' '),
-              status: 'confirmed' as const,
-              createdAt: new Date().toISOString().slice(0, 10),
-              confirmedAt: new Date().toISOString().slice(0, 10),
-              subject: 'Môn học mới'
-            }
-            sessionApi.getAllSessions().push(newSession)
-          })
-          setAddScheduleOpen(false)
-          reloadSessions()
-          alert('Thêm lịch dạy mới thành công!')
+          try {
+            await Promise.all(
+              data.studentIds.map((sid) =>
+                sessionApi.createSession({
+                  programId: data.programId,
+                  tutorId: user.id,
+                  studentId: sid,
+                  mode: data.mode,
+                  location: data.mode === 'offline' ? data.location || 'Chưa rõ' : 'Online',
+                  time: data.time.replace('T', ' '),
+                  status: 'confirmed',
+                  subject: 'Môn học mới' 
+                })
+              )
+            )
+            setAddScheduleOpen(false)
+            reloadSessions()
+            alert('Thêm lịch dạy mới thành công!')
+          } catch (error) {
+            console.error(error)
+            alert('Lỗi khi thêm lịch.')
+          }
         }}
         mockPrograms={[
           { id: 1, title: 'Toán cao cấp' },
@@ -221,7 +245,7 @@ export default function SessionSchedule() {
         onOpenFeedback={openViewFeedback}
         onOpenReport={openReport}
         calcAvg={calcAvg}
-        onOpenTutorRating={openTutorRating} // 👈 thêm dòng này
+        onOpenTutorRating={openTutorRating} 
       />
 
       <RatingModal
