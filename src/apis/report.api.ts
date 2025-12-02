@@ -17,6 +17,7 @@ export const reportApi = {
     })
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   generateReport(filters: any) {
     return http.post<SuccessResponse<GenerateReportResponse>>(`${URL}/generate`, {
       filters

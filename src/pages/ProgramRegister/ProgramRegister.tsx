@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import ProgramSearchForm from './components/ProgramSearchForm'
 import type { Program, ProgramCategory } from 'src/types/program.type'
-import { MockProgramAPI } from 'src/apis/program.api'
+import { programApi } from 'src/apis/program.api' // Đổi import
 import { AppContext } from 'src/contexts/app.context'
 import ProgramCard from './components/ProgramCard/ProgramCard'
 import ProgramDetailModal from './components/ProgramDetailModal/ProgramDetailModal'
@@ -17,7 +17,6 @@ export default function ProgramRegister() {
   const [selectedProgram, setSelectedProgram] = React.useState<Program | null>(null)
   const [toast, setToast] = React.useState<string | null>(null)
 
-  // ✅ debounce timer
   const debounceRef = React.useRef<number | null>(null)
 
   React.useEffect(() => {
@@ -25,66 +24,80 @@ export default function ProgramRegister() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ✅ Theo dõi thay đổi của query / category / field để cập nhật tự động
   React.useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = window.setTimeout(() => {
       fetchPrograms({ q: query, category: category === 'all' ? '' : category, field })
-    }, 400) // ⏱ 0.4s debounce
+    }, 400) 
   }, [query, category, field])
 
-  function fetchPrograms(params?: { q?: string; category?: string; field?: string }) {
+  async function fetchPrograms(params?: { q?: string; category?: string; field?: string }) {
     try {
-      if (user?.role === 'tutor') {
-        const data = MockProgramAPI.getProgramsByTutor(user.id)
-        setPrograms(data)
-        return
-      }
-
       const q = params?.q ?? query
       const cat = params?.category ?? (category === 'all' ? '' : category)
       const f = params?.field ?? field
-      const data = MockProgramAPI.getPrograms({ q, category: cat, field: f })
-      setPrograms(data)
+      
+      const res = await programApi.getPrograms({ q, category: cat, field: f })
+      setPrograms(res.data.data)
+      setError(null)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || 'Lỗi khi lấy chương trình')
+      setPrograms([])
     }
   }
 
-  function openProgramDetail(p: Program) {
-    const data = MockProgramAPI.getProgramById(p.id)
-    if (data) setSelectedProgram(data)
-    else setToast('Không tìm thấy chương trình')
+  async function openProgramDetail(p: Program) {
+    try {
+      const res = await programApi.getProgramById(p.id)
+      if (res.data.data) setSelectedProgram(res.data.data)
+    } catch (error) {
+      console.log(error)
+      setToast('Không tìm thấy chương trình')
+    }
   }
 
-  function registerProgram(programId: number) {
+  async function registerProgram(programId: number) {
     if (!user) {
       setToast('Vui lòng đăng nhập để đăng ký chương trình')
       return
     }
     try {
-      const reg = MockProgramAPI.registerProgram(programId, user.id)
-      setToast(`Đăng ký thành công (mã ${reg.id})`)
-      setPrograms(MockProgramAPI.getPrograms())
+      const res = await programApi.registerProgram(programId, user.id)
+      setToast(`Đăng ký thành công (mã ${res.data.data.id})`)
+      fetchPrograms() // Reload list
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setToast(err.message || 'Đăng ký thất bại')
+      setToast(err.response?.data?.message || 'Đăng ký thất bại')
     }
   }
 
-  function selectTutor(registrationId: number, tutorId: number) {
-    const ok = MockProgramAPI.selectTutor(registrationId, tutorId)
-    setToast(ok ? 'Chọn tutor thành công' : 'Chọn tutor thất bại')
-  }
-
-  function aiMatch(registrationId: number) {
-    const list = MockProgramAPI.aiMatchTutors(registrationId)
-    if (list.length === 0) setToast('Không có tutor phù hợp')
-    else {
-      setToast('AI gợi ý đã sẵn sàng')
-      setSelectedProgram((prev) => (prev ? { ...prev, tutors: list } : prev))
+  async function selectTutor(registrationId: number, tutorId: number) {
+    try {
+      const res = await programApi.selectTutor(registrationId, tutorId)
+      setToast(res.data.data.success ? 'Chọn tutor thành công' : 'Chọn tutor thất bại')
+    } catch (error) {
+      console.log(error)
+      setToast('Lỗi khi chọn tutor')
     }
   }
 
+  async function aiMatch(registrationId: number) {
+    try {
+      const res = await programApi.aiMatchTutors(registrationId)
+      const list = res.data.data
+      if (list.length === 0) setToast('Không có tutor phù hợp')
+      else {
+        setToast('AI gợi ý đã sẵn sàng')
+        setSelectedProgram((prev) => (prev ? { ...prev, tutors: list } : prev))
+      }
+    } catch (error) {
+      console.log(error)
+      setToast('Lỗi khi AI tìm kiếm tutor')
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function handleSearchSubmit(e?: React.FormEvent) {
     e?.preventDefault()
     fetchPrograms({ q: query, category: category === 'all' ? '' : category, field })

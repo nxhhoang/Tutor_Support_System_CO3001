@@ -1,11 +1,12 @@
 import React, { useContext } from 'react'
-import { MockProgramAPI } from 'src/apis/program.api'
+import { programApi } from 'src/apis/program.api' // Đổi import
 import { AppContext } from 'src/contexts/app.context'
 import type { Program, TutorSummary } from 'src/types/program.type'
 
 export default function ProgramDetailModal({
   program,
   onClose,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onRegister,
   onSelectTutor,
   onAIMatch,
@@ -27,24 +28,42 @@ export default function ProgramDetailModal({
   const [viewTutor, setViewTutor] = React.useState<TutorSummary | null>(null)
 
   React.useEffect(() => {
-    if (currentStudentId) {
-      const regs = MockProgramAPI.getRegistrations(currentStudentId, program.id)
-      if (regs.length > 0) setRegistrationId(regs[0].id)
+    async function fetchRegistration() {
+      if (currentStudentId) {
+        try {
+          const res = await programApi.getRegistrations(currentStudentId, program.id)
+          if (res.data.data.length > 0) {
+            setRegistrationId(res.data.data[0].id)
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
     }
+    fetchRegistration()
   }, [program.id, currentStudentId])
 
-  function fetchTutors(q?: string) {
-    const list = MockProgramAPI.getTutors(program.id, q)
-    setTutors(list)
+  async function fetchTutors(q?: string) {
+    try {
+      const res = await programApi.getTutors({ programId: program.id, q })
+      setTutors(res.data.data)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  // ✅ Hàm đăng ký tại chỗ nếu chưa đăng ký
-  function ensureRegistration(): number | null {
+  async function ensureRegistration(): Promise<number | null> {
     if (registrationId) return registrationId
     if (!currentStudentId) return null
-    const reg = MockProgramAPI.registerProgram(program.id, currentStudentId)
-    setRegistrationId(reg.id)
-    return reg.id
+    try {
+      const res = await programApi.registerProgram(program.id, currentStudentId)
+      const newId = res.data.data.id
+      setRegistrationId(newId)
+      return newId
+    } catch (error) {
+      console.error(error)
+      return null
+    }
   }
 
   return (
@@ -72,19 +91,30 @@ export default function ProgramDetailModal({
               </div>
             </div>
 
-            {/* ✅ Chỉ hiện nếu user là student */}
             {isStudent && (
               <div className='flex gap-2'>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     let id = registrationId
-                    if (!id) id = ensureRegistration()
+                    if (!id) id = await ensureRegistration()
                     if (id) {
-                      onAIMatch(id)
-                      const list = MockProgramAPI.aiMatchTutors(id)
-                      setTutors(list)
-                      onSelectTutor(id, list[0].id)
-                      alert(`Đã ghép cặp AI thành công với ${list[0].name}!`)
+                      try {
+                        onAIMatch(id)
+                        const res = await programApi.aiMatchTutors(id)
+                        const list = res.data.data
+                        setTutors(list)
+                        if (list.length > 0) {
+                          onSelectTutor(id, list[0].id)
+                          alert(`Đã ghép cặp AI thành công với ${list[0].name}!`)
+                        } else {
+                          alert('Không tìm thấy tutor phù hợp qua AI.')
+                        }
+                      } catch (error) {
+                        console.log(error)
+                        alert('Lỗi khi ghép cặp AI')
+                      }
+                    } else {
+                        alert('Đăng ký thất bại, vui lòng thử lại.')
                     }
                   }}
                   className='px-3 py-2 border rounded'
@@ -132,11 +162,13 @@ export default function ProgramDetailModal({
                       {isStudent && (
                         <button
                           className='px-2 py-1 border border-blue-600 text-blue-600 rounded text-sm hover:bg-blue-50'
-                          onClick={() => {
-                            const id = ensureRegistration()
+                          onClick={async () => {
+                            const id = await ensureRegistration()
                             if (id) {
                               onSelectTutor(id, t.id)
                               alert('Đăng ký tutor thành công!')
+                            } else {
+                                alert('Đăng ký chương trình thất bại.')
                             }
                           }}
                         >
