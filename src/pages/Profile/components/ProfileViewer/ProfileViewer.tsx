@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { profileViewApi } from 'src/apis/profileView.api'
+import { profileApi } from 'src/apis/profileView.api' // Đổi import
 import type { ProfileView } from 'src/types/profileView.type'
 import logo from 'src/assets/images/logobachkhoa.png'
 
@@ -10,10 +10,18 @@ export default function ProfileViewer() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const data = profileViewApi.getAll()
-    setProfiles(data)
-    setFilteredProfiles(data)
-    setLoading(false)
+    profileApi.getAll()
+      .then((res) => {
+        const data = res.data.data
+        setProfiles(data)
+        setFilteredProfiles(data)
+      })
+      .catch((error) => {
+        console.error('Failed to fetch profiles', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
   useEffect(() => {

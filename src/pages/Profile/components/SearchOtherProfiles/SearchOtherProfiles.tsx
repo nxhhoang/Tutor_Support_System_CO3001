@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
-import { profileViewApi } from 'src/apis/profileView.api'
+import { profileApi } from 'src/apis/profileView.api'
 import type { ProfileView } from 'src/types/profileView.type'
 
 export default function SearchOtherProfiles() {
@@ -11,10 +11,18 @@ export default function SearchOtherProfiles() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const data = profileViewApi.getAll()
-    setProfiles(data)
-    setFilteredProfiles(data)
-    setLoading(false)
+    profileApi.getAll()
+      .then((res) => {
+        const data = res.data.data
+        setProfiles(data)
+        setFilteredProfiles(data)
+      })
+      .catch((error) => {
+        console.error('Failed to fetch profiles', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
   useEffect(() => {

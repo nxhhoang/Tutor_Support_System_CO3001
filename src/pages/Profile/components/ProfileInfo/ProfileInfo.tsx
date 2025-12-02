@@ -21,7 +21,6 @@ export default function ProfileInfo({ user }: { user: StudentUser | TutorUser })
 
   return (
     <div>
-      {/* Avatar + Tên + Email */}
       <div className="flex items-center gap-4 mb-6">
         <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
           <img
@@ -38,14 +37,13 @@ export default function ProfileInfo({ user }: { user: StudentUser | TutorUser })
         </div>
       </div>
 
-      {/* Thông tin cơ bản */}
       <div className="space-y-2 text-sm text-gray-700 mb-10">
         {user.role === 'student' && (
           <>
             <InfoRow label="Mã số sinh viên" value={`SV${user.id}`} />
             <InfoRow label="Họ và tên" value={user.name} />
             <InfoRow label="Email" value={user.email} />
-            <InfoRow label="Khoa" value={user.faculty} />
+            <InfoRow label="Khoa" value={user.faculty ?? 'Thông tin chưa cập nhật'} />
             <InfoRow label="Ngành" value={user.major} />
             <InfoRow label="Lớp" value={user.class} />
           </>
@@ -62,7 +60,6 @@ export default function ProfileInfo({ user }: { user: StudentUser | TutorUser })
         )}
       </div>
 
-      {/* Cập nhật thông tin bổ sung */}
       <div className="pt-4">
         <h3 className="text-blue-700 font-medium mb-3">Thông tin bổ sung</h3>
         {isEditing ? (

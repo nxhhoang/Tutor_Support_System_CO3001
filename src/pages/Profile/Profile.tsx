@@ -10,7 +10,6 @@ import ProfileSchedule from './components/ProfileSchedule/ProfileSchedule'
 export default function Profile() {
   const { user } = useContext(AppContext)
 
-  // 🔹 Nếu chưa đăng nhập
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-gray-700">
@@ -19,15 +18,12 @@ export default function Profile() {
     )
   }
 
-  // 🔹 Nếu là các role quản lý (admin, osa, oaa, department)
   if (['admin', 'osa', 'oaa', 'department'].includes(user.role)) {
     return <ProfileViewer />
   }
 
-  // 🔹 Sinh viên / Tutor có hồ sơ cá nhân
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center py-10 px-6">
-      {/* Header */}
       <div className="flex items-center mb-8">
         <img src={logo} alt="BK HCMUT" className="w-20 mr-4" />
         <h1 className="text-2xl font-semibold text-blue-700">
@@ -35,7 +31,6 @@ export default function Profile() {
         </h1>
       </div>
 
-      {/* Body chia 2 nửa */}
       <div className="w-full max-w-6xl bg-white shadow-md rounded-lg grid grid-cols-1 md:grid-cols-2">
         <div className="p-6 border-r border-gray-200 flex flex-col justify-between">
           <ProfileInfo user={user as StudentUser | TutorUser} />
