@@ -9,11 +9,20 @@ export default function ManageMentee() {
   const [selected, setSelected] = useState<Mentee | null>(null)
   const [note, setNote] = useState('')
   const [message, setMessage] = useState('')
-  const [search, setSearch] = useState('') // 🆕 thêm state tìm kiếm
+  const [search, setSearch] = useState('')
   const tutorId = 10
 
+  const fetchMentees = async () => {
+    try {
+      const response = await menteeApi.getAll()
+      setMentees(response.data.data)
+    } catch (error) {
+      console.error('Failed to fetch mentees', error)
+    }
+  }
+
   useEffect(() => {
-    setMentees(menteeApi.getAll())
+    fetchMentees()
   }, [])
 
   const filteredMentees = mentees.filter(
@@ -27,13 +36,21 @@ export default function ManageMentee() {
     setMessage('')
   }
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
     if (!selected || !note.trim()) return
-    const msg = menteeApi.addNote(selected.id, tutorId, note.trim())
-    setMentees(menteeApi.getAll())
-    setSelected(menteeApi.getById(selected.id) || null)
-    setNote('')
-    setMessage(msg)
+
+    try {
+      const res = await menteeApi.addNote(selected.id, tutorId, note.trim())
+      setMessage(res.data.message || 'Thêm ghi chú thành công')
+      setNote('')
+      fetchMentees()
+      const detailRes = await menteeApi.getById(selected.id)
+      setSelected(detailRes.data.data)
+      
+    } catch (error) {
+      console.error('Error saving note:', error)
+      setMessage('Có lỗi xảy ra khi lưu ghi chú')
+    }
   }
 
   return (
@@ -46,11 +63,9 @@ export default function ManageMentee() {
       {message && <div className="text-green-700 bg-green-50 p-2 rounded">{message}</div>}
 
       <div className="grid md:grid-cols-3 gap-4">
-        {/* --- Danh sách mentee --- */}
         <div className="space-y-2">
           <h3 className="font-semibold text-lg">Danh sách mentee</h3>
 
-          {/* 🆕 Thanh tìm kiếm */}
           <input
             type="text"
             placeholder="Tìm theo tên hoặc lớp học..."
@@ -80,7 +95,6 @@ export default function ManageMentee() {
           ))}
         </div>
 
-        {/* --- Chi tiết mentee --- */}
         <div className="md:col-span-2">
           {selected ? (
             <div className="space-y-4">
@@ -92,7 +106,6 @@ export default function ManageMentee() {
                 <div>Tiến độ: {selected.progress}</div>
               </div>
 
-              {/* --- Lịch học sắp tới --- */}
               {selected.nextSession && (
                 <div className="bg-white p-3 rounded shadow">
                   <h4 className="font-semibold text-base mb-1">📅 Buổi học sắp tới</h4>
@@ -108,7 +121,6 @@ export default function ManageMentee() {
                 </div>
               )}
 
-              {/* --- Đánh giá trước đó --- */}
               {selected.previousFeedbacks && selected.previousFeedbacks.length > 0 && (
                 <div className="bg-white p-3 rounded shadow">
                   <h4 className="font-semibold text-base mb-1">📝 Đánh giá trước đó</h4>
@@ -125,7 +137,6 @@ export default function ManageMentee() {
                 </div>
               )}
 
-              {/* --- Ghi chú --- */}
               <div className="bg-white p-3 rounded shadow">
                 <h4 className="font-semibold text-base mb-2">🖊️ Ghi chú cho mentee</h4>
                 <textarea

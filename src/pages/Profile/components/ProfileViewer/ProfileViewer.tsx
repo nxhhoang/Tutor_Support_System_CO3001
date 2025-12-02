@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { profileApi } from 'src/apis/profileView.api' // Đổi import
+import { profileApi } from 'src/apis/profileView.api' 
 import type { ProfileView } from 'src/types/profileView.type'
 import logo from 'src/assets/images/logobachkhoa.png'
 

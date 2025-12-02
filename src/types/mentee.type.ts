@@ -1,4 +1,3 @@
-// src/types/mentee.type.ts
 import type { Session, SessionFeedback } from './session.type'
 
 export type MenteeNote = {
