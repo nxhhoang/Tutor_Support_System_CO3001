@@ -1,4 +1,3 @@
-// src/pages/HomePage.tsx
 import { motion } from 'framer-motion'
 import logo from 'src/assets/images/logobachkhoa.png'
 import { useNavigate } from 'react-router-dom'
@@ -11,11 +10,9 @@ export default function HomePage() {
 
   const handleLoginClick = () => {
     setLoading(true)
-    // sau 100ms thì chuyển sang /sso/login
     setTimeout(() => navigate(path.sso), 500)
   }
 
-  // Nếu loading: hiển thị màn hình trắng
   if (loading) {
     return <div className='min-h-screen bg-white transition-all duration-100' />
   }

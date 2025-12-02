@@ -1,4 +1,3 @@
-// src/pages/Dashboard.tsx
 import HomeImg from 'src/assets/images/Home_minimize.png'
 
 export default function Dashboard() {

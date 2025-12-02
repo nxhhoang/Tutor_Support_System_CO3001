@@ -9,25 +9,48 @@ export default function Documents() {
   const [message, setMessage] = useState('')
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
-  // Khi load trang → hiển thị tất cả tài liệu
   useEffect(() => {
-    setDocs(docApi.getAllDocs())
+    const fetchDocs = async () => {
+      try {
+        const res = await docApi.getAllDocs()
+        setDocs(res.data.data)
+      } catch (error) {
+        console.error('Failed to fetch docs:', error)
+      }
+    }
+    fetchDocs()
   }, [])
 
-  // Xử lý tìm kiếm
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!keyword.trim()) {
       setMessage('Vui lòng nhập từ khóa tìm kiếm.')
-      setDocs(docApi.getAllDocs())
+      try {
+        const res = await docApi.getAllDocs()
+        setDocs(res.data.data)
+      } catch (error) {
+        console.error(error)
+      }
       return
     }
+    
     setMessage('')
-    setDocs(docApi.searchDocs(keyword))
+    try {
+      const res = await docApi.searchDocs(keyword)
+      setDocs(res.data.data)
+    } catch (error) {
+      console.error(error)
+      setDocs([])
+    }
   }
 
-  const handleDownload = (id: string) => {
-    const msg = docApi.downloadDoc(id)
-    setMessage(msg)
+  const handleDownload = async (id: string) => {
+    try {
+      const res = await docApi.downloadDoc(id)
+      setMessage(res.data.message)
+    } catch (error) {
+      console.error(error)
+      setMessage('Có lỗi xảy ra khi tải tài liệu.')
+    }
   }
 
   const handleShare = (doc: DocItem) => {
@@ -129,7 +152,6 @@ export default function Documents() {
                   </div>
                 </div>
 
-                {/* --- Mô tả mở rộng --- */}
                 {expandedId === d.id && (
                   <div className='mt-3 p-3 bg-gray-50 rounded text-sm text-gray-700'>
                     <p>

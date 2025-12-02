@@ -11,7 +11,6 @@ export default function CommunityTopicDetail() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = React.useState(false)
 
-  // Hàm load lại dữ liệu từ API
   const reloadTopic = React.useCallback(async () => {
     if (!topicId) return
     try {
@@ -39,7 +38,7 @@ export default function CommunityTopicDetail() {
       await topicApi.addComment(topic.id, content, 'Bạn', replyTo?.id)
       setContent('')
       setReplyTo(null)
-      await reloadTopic() // reload lại danh sách comment từ server
+      await reloadTopic()
     } catch (error) {
       console.error('Lỗi khi gửi bình luận:', error)
       alert('Không thể gửi bình luận. Vui lòng thử lại.')
