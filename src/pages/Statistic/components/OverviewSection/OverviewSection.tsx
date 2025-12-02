@@ -9,9 +9,12 @@ export default function OverviewSection({ semester, setSemester, summaries, setD
       <div className="flex gap-3 mb-4">
         <select
           value={semester}
-          onChange={(e) => {
-            setSemester(e.target.value)
-            setDetails(reportApi.getDetailedReports(e.target.value))
+          onChange={async (e) => {
+            const value = e.target.value
+            setSemester(value)
+
+            const res = await reportApi.getDetailedReports(value)
+            setDetails(res.data.data)
           }}
           className="border rounded px-3 py-1"
         >

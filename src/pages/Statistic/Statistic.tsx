@@ -10,9 +10,16 @@ export default function Statistic() {
   const { semester, setSemester, summaries, details, setDetails } = useReportData()
   const [filters, setFilters] = React.useState({ format: 'pdf', type: 'byProgram' })
 
-  function handleGenerate() {
-    const res = reportApi.generateReport({ semester, ...filters })
-    if (res.success) alert(`Báo cáo đã được tạo thành công (${filters.format.toUpperCase()})!`)
+  async function handleGenerate() {
+    try {
+      const res = await reportApi.generateReport({ semester, ...filters })
+      if (res.data.success) {
+        alert(`Báo cáo đã được tạo thành công (${filters.format.toUpperCase()})!`)
+      }
+    } catch (error) {
+      console.error(error)
+      alert('Có lỗi xảy ra khi tạo báo cáo.')
+    }
   }
 
   return (

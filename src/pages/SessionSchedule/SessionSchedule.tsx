@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { sessionApi } from 'src/apis/session.api'
-import type { Session, SessionFeedback } from 'src/types/session.type'
+import type { CreateSessionFeedbackDto, Session, SessionFeedback } from 'src/types/session.type'
 import { AppContext } from 'src/contexts/app.context'
 
 import ConfirmedSessions from './components/ConfirmedSessions'
@@ -96,7 +96,6 @@ export default function SessionSchedule() {
   const pending = sessions.filter((s) => s.status === 'pending')
   const completed = sessions.filter((s) => s.status === 'completed')
 
-
   async function handleCancel(sessionId: number) {
     try {
       await sessionApi.cancelSession(sessionId)
@@ -107,7 +106,7 @@ export default function SessionSchedule() {
     }
   }
 
-  async function handleConfirm(sessionId: number, updatedData?: Partial<Session>) {
+  async function handleConfirm(sessionId: number) {
     try {
       await sessionApi.confirmSession(sessionId)
       reloadSessions()
@@ -132,8 +131,8 @@ export default function SessionSchedule() {
 
   async function submitRating() {
     if (!ratingSession || !user) return
-    
-    const payload = {
+
+    const payload: CreateSessionFeedbackDto = {
       studentId: user.id,
       sessionId: ratingSession.id,
       comment: ratingComment,
@@ -141,7 +140,7 @@ export default function SessionSchedule() {
     }
 
     try {
-      await sessionApi.addFeedback(ratingSession.id, payload as any)
+      await sessionApi.addFeedback(ratingSession.id, payload)
       setRatingOpen(false)
       reloadSessions()
     } catch (error) {
@@ -149,11 +148,13 @@ export default function SessionSchedule() {
       alert('Không thể lưu đánh giá.')
     }
   }
+
   async function openViewFeedback(session: Session) {
     try {
       const res = await sessionApi.getFeedbacksBySession(session.id)
+      console.log(res)
       setViewFeedbackSession(session)
-      setViewFeedbacks(res.data.data.feedbacks || [])
+      setViewFeedbacks(res.data.data.data.studentFeedbacks || [])
       setViewFeedbackOpen(true)
     } catch (error) {
       console.error(error)
@@ -210,7 +211,7 @@ export default function SessionSchedule() {
                   location: data.mode === 'offline' ? data.location || 'Chưa rõ' : 'Online',
                   time: data.time.replace('T', ' '),
                   status: 'confirmed',
-                  subject: 'Môn học mới' 
+                  subject: 'Môn học mới'
                 })
               )
             )
@@ -245,7 +246,7 @@ export default function SessionSchedule() {
         onOpenFeedback={openViewFeedback}
         onOpenReport={openReport}
         calcAvg={calcAvg}
-        onOpenTutorRating={openTutorRating} 
+        onOpenTutorRating={openTutorRating}
       />
 
       <RatingModal

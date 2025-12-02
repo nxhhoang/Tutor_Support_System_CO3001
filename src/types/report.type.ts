@@ -17,3 +17,9 @@ export type DetailedReport = {
   completedSessions: number
   ongoingSessions: number
 }
+
+export type GenerateReportResponse = {
+  success: boolean
+  time: string
+  filters: any
+}

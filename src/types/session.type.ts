@@ -57,3 +57,14 @@ export type Avg = {
   goalTransmission: number
   count: number
 } | null
+
+export type CreateSessionFeedbackDto = {
+  studentId: number
+  sessionId: number
+  practicalRelevance: number
+  knowledgeLoad: number
+  clarity: number
+  enthusiasm: number
+  goalTransmission: number
+  comment?: string
+}

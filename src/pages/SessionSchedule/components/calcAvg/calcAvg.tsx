@@ -1,23 +1,35 @@
 import type { SessionFeedback } from 'src/types/session.type'
+import type { Avg } from 'src/types/session.type'
 
-export function calcAvg(feedbacks: SessionFeedback[] | undefined) {
-  if (!feedbacks || feedbacks.length === 0) return 0
+export function calcAvg(feedbacks: SessionFeedback[] | undefined): Avg {
+  if (!feedbacks || feedbacks.length === 0) {
+    return null
+  }
 
-  const totalScore = feedbacks.reduce((sum, fb: any) => {
-    // Kiem tra xem du lieu la kieu cu (co ratingCriteria) hay kieu moi (phang)
-    // Neu fb.ratingCriteria ton tai thi dung no, neu khong thi dung chinh fb
-    const criteria = fb.ratingCriteria || fb
+  const sum = {
+    practicalRelevance: 0,
+    knowledgeLoad: 0,
+    clarity: 0,
+    enthusiasm: 0,
+    goalTransmission: 0,
+  }
 
-    // Đảm bảo các giá trị là số (phòng trường hợp null/undefined)
-    const p = Number(criteria.practicalRelevance) || 0
-    const k = Number(criteria.knowledgeLoad) || 0
-    const c = Number(criteria.clarity) || 0
-    const e = Number(criteria.enthusiasm) || 0
-    const g = Number(criteria.goalTransmission) || 0
+  for (const fb of feedbacks) {
+    sum.practicalRelevance += fb.practicalRelevance
+    sum.knowledgeLoad += fb.knowledgeLoad
+    sum.clarity += fb.clarity
+    sum.enthusiasm += fb.enthusiasm
+    sum.goalTransmission += fb.goalTransmission
+  }
 
-    const sessionAvg = (p + k + c + e + g) / 5
-    return sum + sessionAvg
-  }, 0)
+  const count = feedbacks.length
 
-  return (totalScore / feedbacks.length).toFixed(1)
+  return {
+    practicalRelevance: Number((sum.practicalRelevance / count).toFixed(1)),
+    knowledgeLoad: Number((sum.knowledgeLoad / count).toFixed(1)),
+    clarity: Number((sum.clarity / count).toFixed(1)),
+    enthusiasm: Number((sum.enthusiasm / count).toFixed(1)),
+    goalTransmission: Number((sum.goalTransmission / count).toFixed(1)),
+    count
+  }
 }

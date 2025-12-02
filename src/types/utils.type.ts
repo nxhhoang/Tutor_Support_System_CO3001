@@ -1,6 +1,7 @@
 export interface SuccessResponse<Data> {
   message: string
   data: Data
+  success?: boolean
 }
 export interface ErrorResponse<Data> {
   message: string
